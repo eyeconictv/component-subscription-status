@@ -1,0 +1,21 @@
+<html>
+<head>
+  <title>Subscription Status - Test Page</title>
+</head>
+<body ng-app="testapp" ng-controller="mainController">
+
+<div id="subscription-status" subscription-status product-id="{{productId}}" ng-model="subscribed"></div>
+
+<script type="text/javascript" src="/components/jquery/dist/jquery.js"></script>
+<script type="text/javascript" src="/components/angular/angular.js"></script>
+<script type="text/javascript" src="../jsapi-mock.js"></script>
+<script type="text/javascript" src="/dist/js/subscription-status.js"></script>
+
+<script type="text/javascript">
+angular.module('testapp', ['risevision.widget.common.subscription-status'])
+  .controller("mainController", ["$scope", function ($scope) {
+    $scope.productId = "186c10da8a7eb826dc8a798e8a179cdb7c073ef9";
+  }]);
+</script>
+</body>
+</html>
