@@ -1,8 +1,9 @@
 "use strict";
 
-angular.module("risevision.widget.common.subscription-status", [])
-  .directive("subscriptionStatus", ["$templateCache",
-    function ($templateCache) {
+angular.module("risevision.widget.common.subscription-status",
+  ["risevision.widget.common.service.store"])
+  .directive("subscriptionStatus", ["$templateCache", "storeService",
+    function ($templateCache, storeService) {
     return {
       restrict: "AE",
       require: "?ngModel",
@@ -11,10 +12,14 @@ angular.module("risevision.widget.common.subscription-status", [])
       },
       template: $templateCache.get("subscription-status-template.html"),
       link: function($scope, elm, attrs, ctrl) {
-        $scope.subscribed = true;
-        $scope.subscriptionMessage = "Free";
         if ($scope.productId) {
-          // TODO: send request
+          storeService.getSubscriptionStatus($scope.productId).then(function(subscriptionStatus) {
+            $scope.subscribed = false;
+            if (subscriptionStatus) {
+              $scope.subscribed = true;
+              $scope.subscriptionMessage = subscriptionStatus.status;
+            }
+          });
         }
 
         if (ctrl) {
