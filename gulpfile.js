@@ -60,17 +60,11 @@
   gulp.task("sass", function () {
     return gulp.src("src/scss/*.scss")
       .pipe(sass())
-      .pipe(gulp.dest("tmp/css"));
-  });
-
-  gulp.task("css", ["sass"], function () {
-    return gulp.src("tmp/css/*.css")
-      .pipe(concat("all.css"))
       .pipe(gulp.dest("dist/css"));
   });
 
-  gulp.task("css-min", ["css"], function () {
-    return gulp.src("dist/css/all.css")
+  gulp.task("css-min", ["sass"], function () {
+    return gulp.src("dist/css/*.css")
       .pipe(minifyCSS({keepBreaks:true}))
       .pipe(rename(function (path) {
         path.basename += ".min";
@@ -112,7 +106,7 @@
   });
 
   gulp.task("build", function (cb) {
-    runSequence(["clean", "config"], ["js-uglify"], cb);
+    runSequence(["clean", "config"], ["js-uglify", "css-min"], cb);
   });
 
   gulp.task("test:unit:ng", factory.testUnitAngular({
