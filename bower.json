@@ -22,6 +22,7 @@
     "jquery": "1.11.0",
     "angular": "1.2.18",
     "angular-mocks": "1.2.18",
-    "q": "1.0.1"
+    "q": "1.0.1",
+    "common-style": "https://github.com/Rise-Vision/common-style.git"
   }
 }

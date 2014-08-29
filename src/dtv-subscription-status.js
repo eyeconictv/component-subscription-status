@@ -8,12 +8,14 @@ angular.module("risevision.widget.common.subscription-status",
       restrict: "AE",
       require: "?ngModel",
       scope: {
-        productId: "@"
+        productId: "@",
+        productCode: "@",
+        companyId: "@"
       },
       template: $templateCache.get("subscription-status-template.html"),
       link: function($scope, elm, attrs, ctrl) {
-        if ($scope.productId) {
-          storeService.getSubscriptionStatus($scope.productId).then(function(subscriptionStatus) {
+        if ($scope.productCode && $scope.companyId) {
+          storeService.getSubscriptionStatus($scope.productCode, $scope.companyId).then(function(subscriptionStatus) {
             $scope.subscribed = false;
             if (subscriptionStatus) {
               $scope.subscribed = true;
@@ -23,8 +25,9 @@ angular.module("risevision.widget.common.subscription-status",
         }
 
         if (ctrl) {
-          // TODO: populate status
-
+          $scope.$watch("subscribed", function(subscribed) {
+            ctrl.$setViewValue(subscribed);
+          });
         }
       }
     };
