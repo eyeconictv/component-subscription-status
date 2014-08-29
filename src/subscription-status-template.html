@@ -1,6 +1,8 @@
-<span ng-class="{'product-trial':subscribed, 'product-expired':!subscribed}"
-  class="fa fa-question-circle fa-lg">
-  <h3>
-    {{subscriptionMessage}}
-  </h3>
-</span>
+<a href="{{productId | productUrl}}" target="_blank">
+  <span ng-class="{'product-trial':subscribed, 'product-expired':!subscribed}">
+    <h3>
+      {{subscriptionMessage}}
+      <i class="fa fa-question-circle icon-right"></i>
+    </h3>
+  </span>
+</a>
