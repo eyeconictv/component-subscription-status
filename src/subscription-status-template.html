@@ -1,8 +1,15 @@
-<a href="{{productId | productUrl}}" target="_blank">
+<a href="" ng-click="showStoreModal = true;">
   <span ng-class="{'product-trial':subscribed, 'product-expired':!subscribed}">
     <h3>
-      {{subscriptionMessage}}
+      {{subscriptionStatus}}
+      <span ng-if="subscriptionStatus === 'On Trial'"> - {{ subscriptionExpiry | productTrialDaysToExpiry }}</span>
       <i class="fa fa-question-circle icon-right"></i>
     </h3>
   </span>
 </a>
+<div class="storage-selector-backdrop stack-top" ng-show="showStoreModal"
+  ng-click="showStoreModal = false;">
+</div>
+<iframe id="store-modal-frame" name="store-modal-frame" class="storage-selector-iframe stack-top"
+  ng-show="showStoreModal">
+</iframe>

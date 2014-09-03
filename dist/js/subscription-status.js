@@ -14,9 +14,10 @@
 
   angular.module("risevision.widget.common.subscription-status",
     ["risevision.widget.common.subscription-status.config",
-    "risevision.widget.common.service.store"])
-    .directive("subscriptionStatus", ["$templateCache", "storeService",
-      function ($templateCache, storeService) {
+    "risevision.widget.common.service.store",
+    "risevision.widget.common"])
+    .directive("subscriptionStatus", ["$templateCache", "storeService", "$location", "gadgetsApi",
+      function ($templateCache, storeService, $location, gadgetsApi) {
       return {
         restrict: "AE",
         require: "?ngModel",
@@ -27,46 +28,108 @@
         },
         template: $templateCache.get("subscription-status-template.html"),
         link: function($scope, elm, attrs, ctrl) {
+          var storeModalInitialized = false;
+          var $elm = $(elm);
+
+          $scope.showStoreModal = false;
+          $scope.storeModalUrl = "";
+
           $scope.$watch("companyId", function(companyId) {
             if ($scope.productCode && $scope.productId && companyId) {
-              storeService.getSubscriptionStatus($scope.productCode, companyId).then(function(subscriptionStatus) {
-                $scope.subscribed = false;
-                if (subscriptionStatus) {
-                  $scope.subscribed = true;
-                  $scope.subscriptionMessage = subscriptionStatus.status;
-                }
-              });
+              checkSubscriptionStatus();
             }
           });
+
+          function checkSubscriptionStatus() {
+            storeService.getSubscriptionStatus($scope.productCode, $scope.companyId).then(function(subscriptionStatus) {
+              $scope.subscribed = false;
+              if (subscriptionStatus) {
+                $scope.subscribed = true;
+                $scope.subscriptionStatus = subscriptionStatus.status;
+                if (subscriptionStatus.expiry) {
+                  $scope.subscriptionExpiry = subscriptionStatus.expiry;
+                }
+              }
+            });
+          }
 
           if (ctrl) {
             $scope.$watch("subscribed", function(subscribed) {
               ctrl.$setViewValue(subscribed);
             });
           }
+
+          var watch = $scope.$watch("showStoreModal", function(show) {
+            if (show) {
+              initStoreModal();
+
+              watch();
+            }
+          });
+
+          function initStoreModal() {
+            if (!storeModalInitialized) {
+              var url = "http://store.risevision.com/~rvi/store/?up_id=store-modal-frame&parent=" +
+                encodeURIComponent($location.$$absUrl) +
+                "#/product/" + $scope.productId + "/?inRVA&cid=" + $scope.companyId;
+
+              $elm.find("#store-modal-frame").attr("src", url);
+
+              registerRPC();
+
+              storeModalInitialized = true;
+            }
+          }
+
+          function registerRPC() {
+            if (gadgetsApi) {
+              gadgetsApi.rpc.register("rscmd_saveSettings", saveSettings);
+              gadgetsApi.rpc.register("rscmd_closeSettings", closeSettings);
+
+              gadgetsApi.rpc.setupReceiver("store-modal-frame");
+            }
+          }
+
+          function saveSettings() {
+            checkSubscriptionStatus();
+
+            closeSettings();
+          }
+
+          function closeSettings() {
+            $scope.$apply(function() {
+              $scope.showStoreModal = false;
+            });
+
+            // storeModal.parentNode.removeChild(storeModal);
+            // backDrop.parentNode.removeChild(backDrop);
+          }
         }
       };
     }]);
 }());
 
-(function () {
-  "use strict";
+"use strict";
 
-  angular.module("risevision.widget.common.subscription-status")
-    .filter("productUrl", ["STORE_URL", "PRODUCT_PATH",
-    function(STORE_URL, PRODUCT_PATH) {
-      return function(productId) {
-        if (productId) {
-          var url = STORE_URL;
-          url += PRODUCT_PATH.replace("productId", productId);
-          return url;
+angular.module("risevision.widget.common.subscription-status")
+  .filter("productTrialDaysToExpiry", function() {
+    return function(subscriptionExpiry) {
+      var msg = "Expiring ";
+      try {
+        var days = Math.floor((new Date(subscriptionExpiry) - new Date()) / (1000 * 60 * 60 * 24)) + 1;
+        if (days === 0) {
+          msg += "Today";
         }
         else {
-          return "";
+          msg += "in " + days + " Days";
         }
-      };
-    }]);
-}());
+      } catch (e) {
+        msg += "Today";
+      }
+
+      return msg;
+    };
+  });
 
 (function () {
   "use strict";
@@ -104,14 +167,21 @@ catch(err) { app = angular.module("risevision.widget.common.subscription-status"
 app.run(["$templateCache", function($templateCache) {
   "use strict";
   $templateCache.put("subscription-status-template.html",
-    "<a href=\"{{productId | productUrl}}\" target=\"_blank\">\n" +
+    "<a href=\"\" ng-click=\"showStoreModal = true;\">\n" +
     "  <span ng-class=\"{'product-trial':subscribed, 'product-expired':!subscribed}\">\n" +
     "    <h3>\n" +
-    "      {{subscriptionMessage}}\n" +
+    "      {{subscriptionStatus}}\n" +
+    "      <span ng-if=\"subscriptionStatus === 'On Trial'\"> - {{ subscriptionExpiry | productTrialDaysToExpiry }}</span>\n" +
     "      <i class=\"fa fa-question-circle icon-right\"></i>\n" +
     "    </h3>\n" +
     "  </span>\n" +
     "</a>\n" +
+    "<div class=\"storage-selector-backdrop stack-top\" ng-show=\"showStoreModal\"\n" +
+    "  ng-click=\"showStoreModal = false;\">\n" +
+    "</div>\n" +
+    "<iframe id=\"store-modal-frame\" name=\"store-modal-frame\" class=\"storage-selector-iframe stack-top\"\n" +
+    "  ng-show=\"showStoreModal\">\n" +
+    "</iframe>\n" +
     "");
 }]);
 })();
