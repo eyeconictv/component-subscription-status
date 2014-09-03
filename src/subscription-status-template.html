@@ -1,15 +1,18 @@
-<a href="" ng-click="showStoreModal = true;">
-  <span ng-class="{'product-trial':subscribed, 'product-expired':!subscribed}">
-    <h3>
-      {{subscriptionStatus}}
-      <span ng-if="subscriptionStatus === 'On Trial'"> - {{ subscriptionExpiry | productTrialDaysToExpiry }}</span>
-      <i class="fa fa-question-circle icon-right"></i>
-    </h3>
-  </span>
-</a>
-<div class="storage-selector-backdrop stack-top" ng-show="showStoreModal"
+<h3>
+  <a href="" ng-click="showStoreModal = true;">
+      <i class="fa fa-info-circle icon-left"></i>
+  </a>
+  <span class="font-weight-normal">{{'subscription-status.heading' | translate}} |</span>
+  <a href="" ng-click="showStoreModal = true;">
+    <span ng-class="{'product-trial':subscribed, 'product-expired':!subscribed}">
+        {{subscriptionStatus}}
+        <span ng-if="subscriptionStatus === 'On Trial'"> - {{ subscriptionExpiry | productTrialDaysToExpiry }}</span>
+    </span>
+  </a>
+</h3>
+<div class="overlay stack-top" ng-show="showStoreModal"
   ng-click="showStoreModal = false;">
 </div>
-<iframe id="store-modal-frame" name="store-modal-frame" class="storage-selector-iframe stack-top"
+<iframe id="store-modal-frame" name="store-modal-frame" class="wrapper container modal-content full-screen-modal"
   ng-show="showStoreModal">
 </iframe>

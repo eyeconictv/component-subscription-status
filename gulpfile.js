@@ -57,6 +57,11 @@
     // .pipe(jshint.reporter("fail"));
   });
 
+  gulp.task("i18n", function() {
+    return gulp.src("src/locales/**/*.json")
+    .pipe(gulp.dest("dist/locales"));
+  });
+
   gulp.task("sass", function () {
     return gulp.src("src/scss/*.scss")
       .pipe(sass())
@@ -106,7 +111,7 @@
   });
 
   gulp.task("build", function (cb) {
-    runSequence(["clean", "config"], ["js-uglify", "css-min"], cb);
+    runSequence(["clean", "config"], ["js-uglify", "css-min", "i18n"], cb);
   });
 
   gulp.task("test:unit:ng", factory.testUnitAngular({
