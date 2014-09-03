@@ -6,3 +6,11 @@
 
 .stack-top {
   z-index: 2; }
+
+.full-screen-modal {
+  position: absolute;
+  top: 0;
+  left: 0; }
+
+.font-weight-normal {
+  font-weight: normal; }

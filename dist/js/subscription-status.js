@@ -14,10 +14,11 @@
 
   angular.module("risevision.widget.common.subscription-status",
     ["risevision.widget.common.subscription-status.config",
-    "risevision.widget.common.service.store",
+    "risevision.widget.common.translate",
+    "risevision.widget.common.subscription-status.service",
     "risevision.widget.common"])
-    .directive("subscriptionStatus", ["$templateCache", "storeService", "$location", "gadgetsApi",
-      function ($templateCache, storeService, $location, gadgetsApi) {
+    .directive("subscriptionStatus", ["$templateCache", "subscriptionStatusService", "$location", "gadgetsApi",
+      function ($templateCache, subscriptionStatusService, $location, gadgetsApi) {
       return {
         restrict: "AE",
         require: "?ngModel",
@@ -41,7 +42,7 @@
           });
 
           function checkSubscriptionStatus() {
-            storeService.getSubscriptionStatus($scope.productCode, $scope.companyId).then(function(subscriptionStatus) {
+            subscriptionStatusService.get($scope.productCode, $scope.companyId).then(function(subscriptionStatus) {
               $scope.subscribed = false;
               if (subscriptionStatus) {
                 $scope.subscribed = true;
@@ -134,12 +135,12 @@ angular.module("risevision.widget.common.subscription-status")
 (function () {
   "use strict";
 
-  angular.module("risevision.widget.common.service.store",
+  angular.module("risevision.widget.common.subscription-status.service",
     ["risevision.widget.common.subscription-status.config"])
-    .service("storeService", ["$http", "$q", "STORE_SERVER_URL", "PATH_URL",
+    .service("subscriptionStatusService", ["$http", "$q", "STORE_SERVER_URL", "PATH_URL",
     function ($http, $q, STORE_SERVER_URL, PATH_URL) {
 
-      this.getSubscriptionStatus = function (productCode, companyId) {
+      this.get = function (productCode, companyId) {
         var deferred = $q.defer();
 
         var url = STORE_SERVER_URL +
@@ -167,19 +168,22 @@ catch(err) { app = angular.module("risevision.widget.common.subscription-status"
 app.run(["$templateCache", function($templateCache) {
   "use strict";
   $templateCache.put("subscription-status-template.html",
-    "<a href=\"\" ng-click=\"showStoreModal = true;\">\n" +
-    "  <span ng-class=\"{'product-trial':subscribed, 'product-expired':!subscribed}\">\n" +
-    "    <h3>\n" +
-    "      {{subscriptionStatus}}\n" +
-    "      <span ng-if=\"subscriptionStatus === 'On Trial'\"> - {{ subscriptionExpiry | productTrialDaysToExpiry }}</span>\n" +
-    "      <i class=\"fa fa-question-circle icon-right\"></i>\n" +
-    "    </h3>\n" +
-    "  </span>\n" +
-    "</a>\n" +
-    "<div class=\"storage-selector-backdrop stack-top\" ng-show=\"showStoreModal\"\n" +
+    "<h3>\n" +
+    "  <a href=\"\" ng-click=\"showStoreModal = true;\">\n" +
+    "      <i class=\"fa fa-info-circle icon-left\"></i>\n" +
+    "  </a>\n" +
+    "  <span class=\"font-weight-normal\">{{'subscription-status.heading' | translate}} |</span>\n" +
+    "  <a href=\"\" ng-click=\"showStoreModal = true;\">\n" +
+    "    <span ng-class=\"{'product-trial':subscribed, 'product-expired':!subscribed}\">\n" +
+    "        {{subscriptionStatus}}\n" +
+    "        <span ng-if=\"subscriptionStatus === 'On Trial'\"> - {{ subscriptionExpiry | productTrialDaysToExpiry }}</span>\n" +
+    "    </span>\n" +
+    "  </a>\n" +
+    "</h3>\n" +
+    "<div class=\"overlay stack-top\" ng-show=\"showStoreModal\"\n" +
     "  ng-click=\"showStoreModal = false;\">\n" +
     "</div>\n" +
-    "<iframe id=\"store-modal-frame\" name=\"store-modal-frame\" class=\"storage-selector-iframe stack-top\"\n" +
+    "<iframe id=\"store-modal-frame\" name=\"store-modal-frame\" class=\"wrapper container modal-content full-screen-modal\"\n" +
     "  ng-show=\"showStoreModal\">\n" +
     "</iframe>\n" +
     "");

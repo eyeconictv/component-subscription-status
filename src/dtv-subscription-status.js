@@ -3,10 +3,11 @@
 
   angular.module("risevision.widget.common.subscription-status",
     ["risevision.widget.common.subscription-status.config",
-    "risevision.widget.common.service.store",
+    "risevision.widget.common.translate",
+    "risevision.widget.common.subscription-status.service",
     "risevision.widget.common"])
-    .directive("subscriptionStatus", ["$templateCache", "storeService", "$location", "gadgetsApi",
-      function ($templateCache, storeService, $location, gadgetsApi) {
+    .directive("subscriptionStatus", ["$templateCache", "subscriptionStatusService", "$location", "gadgetsApi",
+      function ($templateCache, subscriptionStatusService, $location, gadgetsApi) {
       return {
         restrict: "AE",
         require: "?ngModel",
@@ -30,7 +31,7 @@
           });
 
           function checkSubscriptionStatus() {
-            storeService.getSubscriptionStatus($scope.productCode, $scope.companyId).then(function(subscriptionStatus) {
+            subscriptionStatusService.get($scope.productCode, $scope.companyId).then(function(subscriptionStatus) {
               $scope.subscribed = false;
               if (subscriptionStatus) {
                 $scope.subscribed = true;
