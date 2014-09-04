@@ -6,8 +6,9 @@
     "risevision.widget.common.translate",
     "risevision.widget.common.subscription-status.service",
     "risevision.widget.common"])
-    .directive("subscriptionStatus", ["$templateCache", "subscriptionStatusService", "$location", "gadgetsApi",
-      function ($templateCache, subscriptionStatusService, $location, gadgetsApi) {
+    .directive("subscriptionStatus", ["$templateCache", "subscriptionStatusService",
+    "$location", "gadgetsApi", "STORE_URL", "IN_RVA_PATH",
+      function ($templateCache, subscriptionStatusService, $location, gadgetsApi, STORE_URL, IN_RVA_PATH) {
       return {
         restrict: "AE",
         require: "?ngModel",
@@ -22,7 +23,8 @@
           var $elm = $(elm);
 
           $scope.showStoreModal = false;
-          $scope.storeModalUrl = "";
+          $scope.subscribed = false;
+          $scope.subscriptionStatus = "N/A";
 
           $scope.$watch("companyId", function(companyId) {
             if ($scope.productCode && $scope.productId && companyId) {
@@ -32,13 +34,16 @@
 
           function checkSubscriptionStatus() {
             subscriptionStatusService.get($scope.productCode, $scope.companyId).then(function(subscriptionStatus) {
-              $scope.subscribed = false;
-              if (subscriptionStatus) {
+              if (subscriptionStatus && subscriptionStatus.status) {
                 $scope.subscribed = true;
                 $scope.subscriptionStatus = subscriptionStatus.status;
                 if (subscriptionStatus.expiry) {
                   $scope.subscriptionExpiry = subscriptionStatus.expiry;
                 }
+              }
+              else {
+                $scope.subscribed = false;
+                $scope.subscriptionStatus = "N/A";
               }
             });
           }
@@ -59,9 +64,10 @@
 
           function initStoreModal() {
             if (!storeModalInitialized) {
-              var url = "http://store.risevision.com/~rvi/store/?up_id=store-modal-frame&parent=" +
-                encodeURIComponent($location.$$absUrl) +
-                "#/product/" + $scope.productId + "/?inRVA&cid=" + $scope.companyId;
+              var url = STORE_URL + IN_RVA_PATH
+              .replace("parentUrl", encodeURIComponent($location.$$absUrl))
+              .replace("productId", $scope.productId)
+              .replace("companyId", $scope.companyId);
 
               $elm.find("#store-modal-frame").attr("src", url);
 
