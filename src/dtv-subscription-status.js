@@ -23,8 +23,7 @@
           var $elm = $(elm);
 
           $scope.showStoreModal = false;
-          $scope.subscribed = false;
-          $scope.subscriptionStatus = "N/A";
+          $scope.subscriptionStatus = {"status": "N/A", "subscribed": false, "expiry": null};
 
           $scope.$watch("companyId", function(companyId) {
             if ($scope.productCode && $scope.productId && companyId) {
@@ -34,17 +33,12 @@
 
           function checkSubscriptionStatus() {
             subscriptionStatusService.get($scope.productCode, $scope.companyId).then(function(subscriptionStatus) {
-              if (subscriptionStatus && subscriptionStatus.status) {
-                $scope.subscribed = true;
-                $scope.subscriptionStatus = subscriptionStatus.status;
-                if (subscriptionStatus.expiry) {
-                  $scope.subscriptionExpiry = subscriptionStatus.expiry;
-                }
+              if (subscriptionStatus) {
+                $scope.subscriptionStatus = subscriptionStatus;
               }
-              else {
-                $scope.subscribed = false;
-                $scope.subscriptionStatus = "N/A";
-              }
+            },
+            function () {
+              // TODO: catch error here
             });
           }
 

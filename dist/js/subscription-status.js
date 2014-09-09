@@ -34,8 +34,7 @@
           var $elm = $(elm);
 
           $scope.showStoreModal = false;
-          $scope.subscribed = false;
-          $scope.subscriptionStatus = "N/A";
+          $scope.subscriptionStatus = {"status": "N/A", "subscribed": false, "expiry": null};
 
           $scope.$watch("companyId", function(companyId) {
             if ($scope.productCode && $scope.productId && companyId) {
@@ -45,17 +44,12 @@
 
           function checkSubscriptionStatus() {
             subscriptionStatusService.get($scope.productCode, $scope.companyId).then(function(subscriptionStatus) {
-              if (subscriptionStatus && subscriptionStatus.status) {
-                $scope.subscribed = true;
-                $scope.subscriptionStatus = subscriptionStatus.status;
-                if (subscriptionStatus.expiry) {
-                  $scope.subscriptionExpiry = subscriptionStatus.expiry;
-                }
+              if (subscriptionStatus) {
+                $scope.subscriptionStatus = subscriptionStatus;
               }
-              else {
-                $scope.subscribed = false;
-                $scope.subscriptionStatus = "N/A";
-              }
+            },
+            function () {
+              // TODO: catch error here
             });
           }
 
@@ -145,6 +139,7 @@ angular.module("risevision.widget.common.subscription-status")
     ["risevision.widget.common.subscription-status.config"])
     .service("subscriptionStatusService", ["$http", "$q", "STORE_SERVER_URL", "PATH_URL",
     function ($http, $q, STORE_SERVER_URL, PATH_URL) {
+      var responseType = ["On Trial", "Trial Expired", "Subscribed", "Suspended", "Cancelled", "Free"];
 
       this.get = function (productCode, companyId) {
         var deferred = $q.defer();
@@ -155,7 +150,22 @@ angular.module("risevision.widget.common.subscription-status")
 
         $http.get(url).then(function (response) {
           if (response && response.data && response.data.length) {
-            deferred.resolve(response.data[0]);
+            var subscriptionStatus = response.data[0];
+
+            if (subscriptionStatus.status === "") {
+              subscriptionStatus.status = "N/A";
+              subscriptionStatus.subscribed = false;
+            }
+            else if (subscriptionStatus.status === responseType[0] ||
+              subscriptionStatus.status === responseType[2] ||
+              subscriptionStatus.status === responseType[5]) {
+              subscriptionStatus.subscribed = true;
+            }
+            else {
+              subscriptionStatus.subscribed = false;
+            }
+
+            deferred.resolve(subscriptionStatus);
           }
           else {
             deferred.reject("No response");
@@ -180,9 +190,9 @@ app.run(["$templateCache", function($templateCache) {
     "  </a>\n" +
     "  <span class=\"font-weight-normal\">{{'subscription-status.heading' | translate}} |</span>\n" +
     "  <a href=\"\" ng-click=\"showStoreModal = true;\">\n" +
-    "    <span ng-class=\"{'product-trial':subscribed, 'product-expired':!subscribed}\">\n" +
-    "        {{subscriptionStatus}}\n" +
-    "        <span ng-if=\"subscriptionStatus === 'On Trial'\"> - {{ subscriptionExpiry | productTrialDaysToExpiry }}</span>\n" +
+    "    <span ng-class=\"{'product-trial':subscriptionStatus.subscribed, 'product-expired':!subscriptionStatus.subscribed}\">\n" +
+    "        {{subscriptionStatus.status}}\n" +
+    "        <span ng-if=\"subscriptionStatus.status === 'On Trial'\"> - {{ subscriptionStatus.expiry | productTrialDaysToExpiry }}</span>\n" +
     "    </span>\n" +
     "  </a>\n" +
     "</h3>\n" +
