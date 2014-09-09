@@ -4,9 +4,9 @@
   </a>
   <span class="font-weight-normal">{{'subscription-status.heading' | translate}} |</span>
   <a href="" ng-click="showStoreModal = true;">
-    <span ng-class="{'product-trial':subscribed, 'product-expired':!subscribed}">
-        {{subscriptionStatus}}
-        <span ng-if="subscriptionStatus === 'On Trial'"> - {{ subscriptionExpiry | productTrialDaysToExpiry }}</span>
+    <span ng-class="{'product-trial':subscriptionStatus.subscribed, 'product-expired':!subscriptionStatus.subscribed}">
+        {{subscriptionStatus.status}}
+        <span ng-if="subscriptionStatus.status === 'On Trial'"> - {{ subscriptionStatus.expiry | productTrialDaysToExpiry }}</span>
     </span>
   </a>
 </h3>
