@@ -7,33 +7,6 @@ describe("Services: subscriptionStatusService", function() {
 
   beforeEach(module(function ($provide) {
     $provide.service("$q", function() {return Q;});
-
-    // $http service mock responds to service requests
-    $provide.service("$http", function() {
-      var service = {};
-
-      service.get = function(url) {
-        var response = {
-          "data": [{
-            "pc":"1",
-            "status":"",
-            "expiry":null
-          }]
-        };
-        if (url && url.indexOf("/company/invalid/") !== -1) {
-          response.data[0].status = "";
-        }
-        else if (url && url.indexOf("/product/status?pc=2") !== -1) {
-          response.data[0].status = "Expired";
-        }
-        else {
-          response.data[0].status = "Free";
-        }
-        return new Q(response);
-      };
-
-      return service;
-    });
   }));
 
   it("should exist", function(done) {
