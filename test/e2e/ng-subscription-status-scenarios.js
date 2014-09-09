@@ -19,8 +19,46 @@
       browser.get("/test/e2e/ng-subscription-status-scenarios.html");
     });
 
-    xit("Should show the subscription status", function (done) {
-      //TODO
+    it("Should show the default subscription status", function (done) {
+      expect(element(by.css("#subscription-status h3 a span")).isPresent()).
+        to.equal.true;
+
+      expect(element(by.css("#subscription-status h3 a span")).getText()).
+        to.eventually.equal("N/A");
+
+      expect(element(by.css(".product-expired")).isPresent()).
+        to.eventually.be.true;
+    });
+
+
+    it("Should show a valid subscription status", function (done) {
+      element(by.id("setValid")).click();
+
+      expect(element(by.css("#subscription-status h3 a span")).getText()).
+        to.eventually.equal("Free");
+
+      expect(element(by.css(".product-trial")).isPresent()).
+        to.eventually.be.true;
+    });
+
+    it("Should show an invalid subscription status", function (done) {
+      element(by.id("setInvalid")).click();
+
+      expect(element(by.css("#subscription-status h3 a span")).getText()).
+        to.eventually.equal("N/A");
+
+      expect(element(by.css(".product-expired")).isPresent()).
+        to.eventually.be.true;
+    });
+
+    it("Should show an expired subscription status", function (done) {
+      element(by.id("setExpired")).click();
+
+      expect(element(by.css("#subscription-status h3 a span")).getText()).
+        to.eventually.equal("Expired");
+
+      expect(element(by.css(".product-expired")).isPresent()).
+        to.eventually.be.true;
     });
 
   });

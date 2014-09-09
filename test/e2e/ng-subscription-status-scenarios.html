@@ -9,6 +9,9 @@
 
 <div id="subscription-status" subscription-status product-id="{{productId}}" product-code="{{productCode}}" company-id="{{companyId}}"
   ng-model="subscribed"></div>
+<button id="setValid" ng-click="setValid()">Valid</button>
+<button id="setInvalid" ng-click="setInvalid()">Invalid</button>
+<button id="setExpired" ng-click="setExpired()">Expired</button>
 
 <script type="text/javascript" src="/components/jquery/dist/jquery.js"></script>
 <script type="text/javascript" src="/components/angular/angular.js"></script>
@@ -16,17 +19,27 @@
 <script type="text/javascript" src="/node_modules/widget-tester/mocks/common-mock.js"></script>
 <script type="text/javascript" src="/components/widget-settings-ui-core/dist/widget-settings-ui-core.js"></script>
 <script type="text/javascript" src="/dist/js/subscription-status.js"></script>
+<script type="text/javascript" src="/test/svc-http-mock.js"></script>
 
 <script type="text/javascript">
 angular.module('testapp', ['risevision.widget.common.subscription-status'])
   .controller("mainController", ["$scope", function ($scope) {
-    $scope.companyId = "f114ad26-949d-44b4-87e9-8528afc76ce4";
+    $scope.productId = "1";
 
-    $scope.productId = "13";
-    $scope.productCode = "1c2acf0b1e789bf4f14506e3e27c8a32832b6d5a";
+    $scope.setValid = function() {
+      $scope.productCode = "1";
+      $scope.companyId = "12345";
+    }
 
-    // $scope.productId = "2005";
-    // $scope.productCode = "186c10da8a7eb826dc8a798e8a179cdb7c073ef9";
+    $scope.setInvalid = function() {
+      $scope.productCode = "1";
+      $scope.companyId = "invalid";
+    }
+
+    $scope.setExpired = function() {
+      $scope.productCode = "2";
+      $scope.companyId = "12345";
+    }
   }]);
 </script>
 </body>
