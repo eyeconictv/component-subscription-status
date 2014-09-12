@@ -1,14 +1,10 @@
 (function () {
   "use strict";
 
-  angular.module("risevision.widget.common.subscription-status",
-    ["risevision.widget.common.subscription-status.config",
-    "risevision.widget.common.translate",
-    "risevision.widget.common.subscription-status.service",
-    "risevision.widget.common"])
+  angular.module("risevision.widget.common.subscription-status")
     .directive("subscriptionStatus", ["$templateCache", "subscriptionStatusService",
-    "$location", "gadgetsApi", "STORE_URL", "IN_RVA_PATH",
-      function ($templateCache, subscriptionStatusService, $location, gadgetsApi, STORE_URL, IN_RVA_PATH) {
+    "$document", "$compile",
+      function ($templateCache, subscriptionStatusService, $document, $compile) {
       return {
         restrict: "AE",
         require: "?ngModel",
@@ -20,26 +16,24 @@
         template: $templateCache.get("subscription-status-template.html"),
         link: function($scope, elm, attrs, ctrl) {
           var storeModalInitialized = false;
-          var $elm = $(elm);
 
-          $scope.showStoreModal = false;
           $scope.subscriptionStatus = {"status": "N/A", "subscribed": false, "expiry": null};
 
-          $scope.$watch("companyId", function(companyId) {
-            if ($scope.productCode && $scope.productId && companyId) {
-              checkSubscriptionStatus();
-            }
+          $scope.$watch("companyId", function() {
+            checkSubscriptionStatus();
           });
 
           function checkSubscriptionStatus() {
-            subscriptionStatusService.get($scope.productCode, $scope.companyId).then(function(subscriptionStatus) {
-              if (subscriptionStatus) {
-                $scope.subscriptionStatus = subscriptionStatus;
-              }
-            },
-            function () {
-              // TODO: catch error here
-            });
+            if ($scope.productCode && $scope.productId && $scope.companyId) {
+              subscriptionStatusService.get($scope.productCode, $scope.companyId).then(function(subscriptionStatus) {
+                if (subscriptionStatus) {
+                  $scope.subscriptionStatus = subscriptionStatus;
+                }
+              },
+              function () {
+                // TODO: catch error here
+              });
+            }
           }
 
           if (ctrl) {
@@ -56,43 +50,28 @@
             }
           });
 
+          $scope.$on("store-dialog-save", function() {
+            checkSubscriptionStatus();
+          });
+
           function initStoreModal() {
             if (!storeModalInitialized) {
-              var url = STORE_URL + IN_RVA_PATH
-              .replace("parentUrl", encodeURIComponent($location.$$absUrl))
-              .replace("productId", $scope.productId)
-              .replace("companyId", $scope.companyId);
-
-              $elm.find("#store-modal-frame").attr("src", url);
-
-              registerRPC();
-
+              var body = $document.find("body").eq(0);
+              
+              var angularDomEl = angular.element("<div store-modal></div>");
+              angularDomEl.attr({
+                "id": "store-modal",
+                "animate": "animate",
+                "show-store-modal": "showStoreModal",
+                "company-id": "{{companyId}}",
+                "product-id": "{{productId}}"
+              });
+              
+              var modalDomEl = $compile(angularDomEl)($scope);
+              body.append(modalDomEl);
+              
               storeModalInitialized = true;
             }
-          }
-
-          function registerRPC() {
-            if (gadgetsApi) {
-              gadgetsApi.rpc.register("rscmd_saveSettings", saveSettings);
-              gadgetsApi.rpc.register("rscmd_closeSettings", closeSettings);
-
-              gadgetsApi.rpc.setupReceiver("store-modal-frame");
-            }
-          }
-
-          function saveSettings() {
-            checkSubscriptionStatus();
-
-            closeSettings();
-          }
-
-          function closeSettings() {
-            $scope.$apply(function() {
-              $scope.showStoreModal = false;
-            });
-
-            // storeModal.parentNode.removeChild(storeModal);
-            // backDrop.parentNode.removeChild(backDrop);
           }
         }
       };

@@ -4,9 +4,6 @@
 .product-expired {
   color: red; }
 
-.stack-top {
-  z-index: 2; }
-
 .full-screen-modal {
   position: absolute;
   top: 0;
