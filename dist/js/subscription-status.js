@@ -117,8 +117,8 @@
           }
 
           if (ctrl) {
-            $scope.$watch("subscribed", function(subscribed) {
-              ctrl.$setViewValue(subscribed);
+            $scope.$watch("subscriptionStatus", function(subscriptionStatus) {
+              ctrl.$setViewValue(subscriptionStatus);
             });
           }
 
