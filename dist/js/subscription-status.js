@@ -37,7 +37,9 @@
             $scope.showStoreModal = true;
             
             function registerRPC() {
-              if (gadgetsApi) {
+              if (!$scope.rpcRegistered && gadgetsApi) {
+                $scope.rpcRegistered = true;
+                
                 gadgetsApi.rpc.register("rscmd_saveSettings", saveSettings);
                 gadgetsApi.rpc.register("rscmd_closeSettings", closeSettings);
 
@@ -57,10 +59,10 @@
               });        
             }
             
-            var watch = $scope.$watch("showStoreModal", function(showStoreModal) {
+            $scope.$watch("showStoreModal", function(showStoreModal) {
               if (showStoreModal) {
                 registerRPC();
-                                
+                
                 var url = STORE_URL + IN_RVA_PATH
                   .replace("iframeId", "store-modal-frame")
                   .replace("parentUrl", encodeURIComponent($location.$$absUrl))
@@ -69,9 +71,8 @@
                                 
                 $elm.find("#store-modal-frame").attr("src", url);
                 
-                watch();
               }
-            });
+            });            
           }
         };
     }]);
