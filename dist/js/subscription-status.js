@@ -64,10 +64,10 @@
                 registerRPC();
                 
                 var url = STORE_URL + IN_RVA_PATH
-                  .replace("iframeId", "store-modal-frame")
-                  .replace("parentUrl", encodeURIComponent($location.$$absUrl))
                   .replace("productId", $scope.productId)
-                  .replace("companyId", $scope.companyId);
+                  .replace("companyId", $scope.companyId)
+                  .replace("iframeId", "store-modal-frame")
+                  .replace("parentUrl", encodeURIComponent($location.$$absUrl));
                                 
                 $elm.find("#store-modal-frame").attr("src", url);
                 
