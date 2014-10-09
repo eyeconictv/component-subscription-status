@@ -22,6 +22,87 @@
   "use strict";
 
   angular.module("risevision.widget.common.subscription-status")
+    .directive("appSubscriptionStatus", ["$templateCache", "subscriptionStatusService",
+    "$document", "$compile",
+      function ($templateCache, subscriptionStatusService, $document, $compile) {
+      return {
+        restrict: "AE",
+        require: "?ngModel",
+        scope: {
+          productId: "@",
+          productCode: "@",
+          companyId: "@",
+          productPrice: "@"
+        },
+        template: $templateCache.get("app-subscription-status-template.html"),
+        link: function($scope, elm, attrs, ctrl) {
+          var storeModalInitialized = false;
+
+          $scope.subscriptionStatus = {"status": "N/A", "subscribed": false, "expiry": null};
+
+          $scope.$watch("companyId", function() {
+            checkSubscriptionStatus();
+          });
+
+          function checkSubscriptionStatus() {
+            if ($scope.productCode && $scope.productId && $scope.companyId) {
+              subscriptionStatusService.get($scope.productCode, $scope.companyId).then(function(subscriptionStatus) {
+                if (subscriptionStatus) {
+                  $scope.subscriptionStatus = subscriptionStatus;
+                }
+              },
+              function () {
+                // TODO: catch error here
+              });
+            }
+          }
+
+          if (ctrl) {
+            $scope.$watch("subscriptionStatus", function(subscriptionStatus) {
+              ctrl.$setViewValue(subscriptionStatus);
+            });
+          }
+
+          var watch = $scope.$watch("showStoreModal", function(show) {
+            if (show) {
+              initStoreModal();
+
+              watch();
+            }
+          });
+
+          $scope.$on("store-dialog-save", function() {
+            checkSubscriptionStatus();
+          });
+
+          function initStoreModal() {
+            if (!storeModalInitialized) {
+              var body = $document.find("body").eq(0);
+
+              var angularDomEl = angular.element("<div store-modal></div>");
+              angularDomEl.attr({
+                "id": "store-modal",
+                "animate": "animate",
+                "show-store-modal": "showStoreModal",
+                "company-id": "{{companyId}}",
+                "product-id": "{{productId}}"
+              });
+
+              var modalDomEl = $compile(angularDomEl)($scope);
+              body.append(modalDomEl);
+
+              storeModalInitialized = true;
+            }
+          }
+        }
+      };
+    }]);
+}());
+
+(function () {
+  "use strict";
+
+  angular.module("risevision.widget.common.subscription-status")
     .directive("storeModal", ["$templateCache", "$location", "gadgetsApi", "STORE_URL", "IN_RVA_PATH",
       function ($templateCache, $location, gadgetsApi, STORE_URL, IN_RVA_PATH) {
         return {
@@ -232,6 +313,26 @@ angular.module("risevision.widget.common.subscription-status")
 
     }]);
 }());
+
+(function(module) {
+try { app = angular.module("risevision.widget.common.subscription-status"); }
+catch(err) { app = angular.module("risevision.widget.common.subscription-status", []); }
+app.run(["$templateCache", function($templateCache) {
+  "use strict";
+  $templateCache.put("app-subscription-status-template.html",
+    "<a id=\"app-subscription-status\" href=\"\"\n" +
+    "  ng-click=\"showStoreModal = true\" class=\"store-link\">\n" +
+    "    <div class=\"rate\">\n" +
+    "      <strong>${{productPrice}}</strong>\n" +
+    "    </div>\n" +
+    "    <div class=\"subscribe\">\n" +
+    "      <strong ng-if=\"!subscriptionStatus.subscribed\">Get a Subscription</strong>\n" +
+    "      <strong ng-if=\"subscriptionStatus.subscribed\">Continue To App</strong>\n" +
+    "    </div>\n" +
+    "</a>\n" +
+    "");
+}]);
+})();
 
 (function(module) {
 try { app = angular.module("risevision.widget.common.subscription-status"); }

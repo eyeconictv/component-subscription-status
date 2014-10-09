@@ -1,0 +1,10 @@
+<a id="app-subscription-status" href=""
+  ng-click="showStoreModal = true" class="store-link">
+    <div class="rate">
+      <strong>${{productPrice}}</strong>
+    </div>
+    <div class="subscribe">
+      <strong ng-if="!subscriptionStatus.subscribed">Get a Subscription</strong>
+      <strong ng-if="subscriptionStatus.subscribed">Continue To App</strong>
+    </div>
+</a>
