@@ -1,23 +1,36 @@
 (function () {
   "use strict";
 
-  angular.module("risevision.widget.common.subscription-status.config", [])
+  try {
+  	angular.module("risevision.common.config");
+  }
+  catch(err) {
+  	angular.module("risevision.common.config", []);
+  }
+
+  angular.module("risevision.common.config")
     .value("STORE_URL", "https://store.risevision.com/")
-    .value("IN_RVA_PATH", "?up_id=iframeId&parent=parentUrl#/product/productId/?inRVA&cid=companyId")
     .value("STORE_SERVER_URL", "https://store-dot-rvaserver2.appspot.com/")
+  ;
+
+  angular.module("risevision.widget.common.subscription-status.config", [])
+    .value("IN_RVA_PATH", "?up_id=iframeId&parent=parentUrl#/product/productId/?inRVA&cid=companyId")
     .value("PATH_URL", "v1/company/companyId/product/status?pc=")
   ;
+
 }());
 
 (function () {
   "use strict";
 
   angular.module("risevision.widget.common.subscription-status",
-    ["risevision.widget.common.subscription-status.config",
-    "risevision.widget.common.translate",
-    "risevision.widget.common.subscription-status.service",
-    "risevision.widget.common"]);
+    ["risevision.common.config",
+     "risevision.widget.common.subscription-status.config",
+     "risevision.widget.common.subscription-status.service",
+     "risevision.widget.common",
+     "risevision.common.i18n"]);
   }());
+
 (function () {
   "use strict";
 
@@ -38,7 +51,7 @@
         link: function($scope, elm, attrs, ctrl) {
           var storeModalInitialized = false;
 
-          $scope.subscriptionStatus = {"status": "N/A", "subscribed": false, "expiry": null};
+          $scope.subscriptionStatus = {"status": "N/A", "statusCode": "na", "subscribed": false, "expiry": null};
 
           $scope.$watch("companyId", function() {
             checkSubscriptionStatus();
@@ -179,7 +192,7 @@
         link: function($scope, elm, attrs, ctrl) {
           var storeModalInitialized = false;
 
-          $scope.subscriptionStatus = {"status": "N/A", "subscribed": false, "expiry": null};
+          $scope.subscriptionStatus = {"status": "N/A", "statusCode": "na", "subscribed": false, "expiry": null};
 
           $scope.$watch("companyId", function() {
             checkSubscriptionStatus();
@@ -243,39 +256,51 @@
 "use strict";
 
 angular.module("risevision.widget.common.subscription-status")
-  .filter("productTrialDaysToExpiry", function() {
+  .filter("productTrialDaysToExpiry", ["$interpolate", "$translate", function($interpolate, $translate) {
+    var expiresToday = null;
+    var expiresIn = null;
+
+    $translate(["subscription-status.expires-today", "subscription-status.expires-in"],
+        { days: "{{days}}" }).then(function(values) {
+      expiresToday = $interpolate(values["subscription-status.expires-today"]);
+      expiresIn = $interpolate(values["subscription-status.expires-in"]);
+    });
+
     return function(subscriptionExpiry) {
-      var msg = "Expiring ";
+      var msg = "";
       try {
         var oneDay = 24*60*60*1000; // hours*minutes*seconds*milliseconds
         var timeInMs = new Date(subscriptionExpiry).getTime() - new Date().getTime();
         var days = Math.floor(timeInMs/oneDay);
+        var params = { days: days };
 
         if (days === 0) {
-          msg += "Today";
+          msg = expiresToday !== null ? expiresToday(params) : "";
         }
         else if (days > 0) {
-          msg += "in " + days + " Days";
+          msg = expiresIn !== null ? expiresIn(params) : "";
         }
         else {
-          msg = "Today";
+          msg = expiresToday !== null ? expiresToday(params) : "";
         }
       } catch (e) {
-        msg += "Today";
+        msg = expiresToday !== null ? expiresToday(params) : "";
       }
 
       return msg;
     };
-  });
+  }]);
 
 (function () {
   "use strict";
 
   angular.module("risevision.widget.common.subscription-status.service",
-    ["risevision.widget.common.subscription-status.config"])
+    ["risevision.common.config",
+     "risevision.widget.common.subscription-status.config"])
     .service("subscriptionStatusService", ["$http", "$q", "STORE_SERVER_URL", "PATH_URL",
     function ($http, $q, STORE_SERVER_URL, PATH_URL) {
-      var responseType = ["On Trial", "Trial Expired", "Subscribed", "Suspended", "Cancelled", "Free"];
+      var responseType = ["On Trial", "Trial Available", "Trial Expired", "Subscribed", "Suspended", "Cancelled", "Free"];
+      var responseCode = ["on-trial", "trial-available", "trial-expired", "subscribed", "suspended", "cancelled", "free"];
 
       this.get = function (productCode, companyId) {
         var deferred = $q.defer();
@@ -287,9 +312,15 @@ angular.module("risevision.widget.common.subscription-status")
         $http.get(url).then(function (response) {
           if (response && response.data && response.data.length) {
             var subscriptionStatus = response.data[0];
-
+            var statusIndex = responseType.indexOf(subscriptionStatus.status);
+            
+            if(statusIndex >= 0) {
+              subscriptionStatus.statusCode = responseCode[statusIndex];
+            }
+            
             if (subscriptionStatus.status === "") {
               subscriptionStatus.status = "N/A";
+              subscriptionStatus.statusCode = "na";
               subscriptionStatus.subscribed = false;
             }
             else if (subscriptionStatus.status === responseType[0] ||
@@ -326,8 +357,8 @@ app.run(["$templateCache", function($templateCache) {
     "      <strong>${{productPrice}}</strong>\n" +
     "    </div>\n" +
     "    <div class=\"subscribe\">\n" +
-    "      <strong ng-if=\"!subscriptionStatus.subscribed\">Get a Subscription</strong>\n" +
-    "      <strong ng-if=\"subscriptionStatus.subscribed\">Continue To App</strong>\n" +
+    "      <strong ng-if=\"!subscriptionStatus.subscribed\"><span translate=\"subscription-status.get-subscription\"></span></strong>\n" +
+    "      <strong ng-if=\"subscriptionStatus.subscribed\"><span translate=\"subscription-status.continue-to-app\"></span></strong>\n" +
     "    </div>\n" +
     "</a>\n" +
     "");
@@ -366,8 +397,8 @@ app.run(["$templateCache", function($templateCache) {
     "  <span class=\"font-weight-normal\">{{'subscription-status.heading' | translate}} |</span>\n" +
     "  <a href=\"\" ng-click=\"showStoreModal = true;\">\n" +
     "    <span ng-class=\"{'product-trial':subscriptionStatus.subscribed, 'product-expired':!subscriptionStatus.subscribed}\">\n" +
-    "        {{subscriptionStatus.status}}\n" +
-    "        <span ng-if=\"subscriptionStatus.status === 'On Trial'\"> - {{ subscriptionStatus.expiry | productTrialDaysToExpiry }}</span>\n" +
+    "        {{ 'subscription-status.' + subscriptionStatus.statusCode | translate}}\n" +
+    "        <span ng-if=\"subscriptionStatus.statusCode === 'on-trial'\"> - {{ subscriptionStatus.expiry | productTrialDaysToExpiry }}</span>\n" +
     "    </span>\n" +
     "  </a>\n" +
     "</h3>");

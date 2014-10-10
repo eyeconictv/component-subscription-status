@@ -5,8 +5,8 @@
   <span class="font-weight-normal">{{'subscription-status.heading' | translate}} |</span>
   <a href="" ng-click="showStoreModal = true;">
     <span ng-class="{'product-trial':subscriptionStatus.subscribed, 'product-expired':!subscriptionStatus.subscribed}">
-        {{subscriptionStatus.status}}
-        <span ng-if="subscriptionStatus.status === 'On Trial'"> - {{ subscriptionStatus.expiry | productTrialDaysToExpiry }}</span>
+        {{ 'subscription-status.' + subscriptionStatus.statusCode | translate}}
+        <span ng-if="subscriptionStatus.statusCode === 'on-trial'"> - {{ subscriptionStatus.expiry | productTrialDaysToExpiry }}</span>
     </span>
   </a>
 </h3>

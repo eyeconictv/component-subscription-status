@@ -18,7 +18,7 @@
         link: function($scope, elm, attrs, ctrl) {
           var storeModalInitialized = false;
 
-          $scope.subscriptionStatus = {"status": "N/A", "subscribed": false, "expiry": null};
+          $scope.subscriptionStatus = {"status": "N/A", "statusCode": "na", "subscribed": false, "expiry": null};
 
           $scope.$watch("companyId", function() {
             checkSubscriptionStatus();

@@ -62,6 +62,14 @@ gulp e2e:server
 
 This now runs a local server at http://localhost:8099 which allows you to view the location of the E2E test HTML file at http://localhost:8099/test/e2e/subscription-status-test.html
 
+### Usage
+
+Subscription Status component depends on common-i18n for its messages. You will need to include a reference to the i18n script in your main HTML page:
+
+```
+<script type="text/javascript" src="components/rv-common-i18n/dist/i18n.js"></script>
+```
+
 ### Dependencies
 
 * **Gulp** - is used as a task runner. It lints, runs unit tests and E2E (end to end) tests, minimizes files, etc.  all dependencies for this is in the gulp.js file.
