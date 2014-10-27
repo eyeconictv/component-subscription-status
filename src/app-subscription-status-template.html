@@ -4,7 +4,7 @@
       <strong>${{productPrice}}</strong>
     </div>
     <div class="subscribe">
-      <strong ng-if="!subscriptionStatus.subscribed">Get a Subscription</strong>
-      <strong ng-if="subscriptionStatus.subscribed">Continue To App</strong>
+      <strong ng-if="!subscriptionStatus.subscribed"><span translate="subscription-status.get-subscription"></span></strong>
+      <strong ng-if="subscriptionStatus.subscribed"><span translate="subscription-status.continue-to-app"></span></strong>
     </div>
 </a>
