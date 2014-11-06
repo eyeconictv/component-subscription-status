@@ -45,7 +45,7 @@ describe("Services: subscriptionStatusService", function() {
     inject(function(subscriptionStatusService) {
       subscriptionStatusService.get("2", "12345").then(function(data){
         expect(data).be.defined;
-        expect(data.status).be.equal("Expired");
+        expect(data.status).be.equal("Trial Expired");
         expect(data.subscribed).be.equal(false);
 
         done();

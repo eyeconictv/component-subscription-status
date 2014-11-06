@@ -22,28 +22,28 @@
         to.equal.true;
 
       expect(element(by.css("#app-subscription-status .subscribe strong")).getText()).
-        to.eventually.equal("Get a Subscription");
+        to.eventually.equal("subscription-status.get-subscription");
     });
 
     it("Should show a valid subscription status", function (done) {
       element(by.id("setValid")).click();
 
       expect(element(by.css("#app-subscription-status .subscribe strong")).getText()).
-        to.eventually.equal("Continue To App");
+        to.eventually.equal("subscription-status.continue-to-app");
     });
 
     it("Should show an invalid subscription status", function (done) {
       element(by.id("setInvalid")).click();
 
       expect(element(by.css("#app-subscription-status .subscribe strong")).getText()).
-        to.eventually.equal("Get a Subscription");
+        to.eventually.equal("subscription-status.get-subscription");
     });
 
     it("Should show an expired subscription status", function (done) {
       element(by.id("setExpired")).click();
 
       expect(element(by.css("#app-subscription-status .subscribe strong")).getText()).
-        to.eventually.equal("Get a Subscription");
+        to.eventually.equal("subscription-status.get-subscription");
     });
 
   });

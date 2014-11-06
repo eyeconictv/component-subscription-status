@@ -15,11 +15,13 @@
           }]
         };
 
+        console.log(url);
+
         if (url && url.indexOf("/company/invalid/") !== -1) {
           response.data[0].status = "";
         }
         else if (url && url.indexOf("/product/status?pc=2") !== -1) {
-          response.data[0].status = "Expired";
+          response.data[0].status = "Trial Expired";
         }
         else {
           response.data[0].status = "Free";
@@ -30,4 +32,25 @@
         return deferred.promise;
       };
     }]);
+
+  try {
+    angular.module("pascalprecht.translate");
+  }
+  catch(err) {
+    angular.module("pascalprecht.translate", []);
+  }
+
+  angular.module("pascalprecht.translate").factory("$translateStaticFilesLoader", [
+    "$q",
+    function ($q) {
+      return function() {
+        var deferred = $q.defer();
+
+        deferred.resolve("{}");
+
+        return deferred.promise;
+      };
+    }
+  ]);
+
 }());

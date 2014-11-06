@@ -24,7 +24,7 @@
         to.equal.true;
 
       expect(element(by.css("#subscription-status h3 a span")).getText()).
-        to.eventually.equal("N/A");
+        to.eventually.equal("subscription-status.na");
 
       expect(element(by.css(".product-expired")).isPresent()).
         to.eventually.be.true;
@@ -35,7 +35,7 @@
       element(by.id("setValid")).click();
 
       expect(element(by.css("#subscription-status h3 a span")).getText()).
-        to.eventually.equal("Free");
+        to.eventually.equal("subscription-status.free");
 
       expect(element(by.css(".product-trial")).isPresent()).
         to.eventually.be.true;
@@ -45,7 +45,7 @@
       element(by.id("setInvalid")).click();
 
       expect(element(by.css("#subscription-status h3 a span")).getText()).
-        to.eventually.equal("N/A");
+        to.eventually.equal("subscription-status.na");
 
       expect(element(by.css(".product-expired")).isPresent()).
         to.eventually.be.true;
@@ -55,7 +55,7 @@
       element(by.id("setExpired")).click();
 
       expect(element(by.css("#subscription-status h3 a span")).getText()).
-        to.eventually.equal("Expired");
+        to.eventually.equal("subscription-status.trial-expired");
 
       expect(element(by.css(".product-expired")).isPresent()).
         to.eventually.be.true;
