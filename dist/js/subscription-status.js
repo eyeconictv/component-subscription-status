@@ -324,8 +324,8 @@ angular.module("risevision.widget.common.subscription-status")
               subscriptionStatus.subscribed = false;
             }
             else if (subscriptionStatus.status === responseType[0] ||
-              subscriptionStatus.status === responseType[2] ||
-              subscriptionStatus.status === responseType[5]) {
+              subscriptionStatus.status === responseType[3] ||
+              subscriptionStatus.status === responseType[6]) {
               subscriptionStatus.subscribed = true;
             }
             else {
