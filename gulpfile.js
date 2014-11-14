@@ -118,7 +118,10 @@
     testFiles: [
       "components/q/q.js",
       "components/angular/angular.js",
+	    "components/angular-translate/angular-translate.js",
+	    "components/angular-translate-loader-static-files/angular-translate-loader-static-files.js",
       "components/angular-mocks/angular-mocks.js",
+      "components/rv-common-i18n/dist/i18n.js",
       "src/config/test.js",
       "src/*.js",
       "test/svc-http-mock.js",
