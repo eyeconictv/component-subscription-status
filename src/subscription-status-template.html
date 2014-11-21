@@ -2,7 +2,10 @@
   <a href="" ng-click="showStoreModal = true;">
       <i class="fa fa-info-circle icon-left"></i>
   </a>
-  <span class="font-weight-normal">{{'subscription-status.heading' | translate}} |</span>
+  <span class="font-weight-normal">{{'subscription-status.heading' | translate}}</span>
+  <span class="hidden-xs font-weight-normal"> |</span>
+  <div class="visible-xs clearfix"></div>
+  
   <a href="" ng-click="showStoreModal = true;">
     <span ng-class="{'product-trial':subscriptionStatus.subscribed, 'product-expired':!subscriptionStatus.subscribed}">
         {{ 'subscription-status.' + subscriptionStatus.statusCode | translate:subscriptionStatus }}

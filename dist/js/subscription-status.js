@@ -400,7 +400,10 @@ app.run(["$templateCache", function($templateCache) {
     "  <a href=\"\" ng-click=\"showStoreModal = true;\">\n" +
     "      <i class=\"fa fa-info-circle icon-left\"></i>\n" +
     "  </a>\n" +
-    "  <span class=\"font-weight-normal\">{{'subscription-status.heading' | translate}} |</span>\n" +
+    "  <span class=\"font-weight-normal\">{{'subscription-status.heading' | translate}}</span>\n" +
+    "  <span class=\"hidden-xs font-weight-normal\"> |</span>\n" +
+    "  <div class=\"visible-xs clearfix\"></div>\n" +
+    "  \n" +
     "  <a href=\"\" ng-click=\"showStoreModal = true;\">\n" +
     "    <span ng-class=\"{'product-trial':subscriptionStatus.subscribed, 'product-expired':!subscriptionStatus.subscribed}\">\n" +
     "        {{ 'subscription-status.' + subscriptionStatus.statusCode | translate:subscriptionStatus }}\n" +
