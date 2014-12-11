@@ -6,5 +6,6 @@
      "risevision.widget.common.subscription-status.config",
      "risevision.widget.common.subscription-status.service",
      "risevision.widget.common",
-     "risevision.common.i18n"]);
+     "risevision.common.i18n",
+     "ngSanitize"]);
   }());

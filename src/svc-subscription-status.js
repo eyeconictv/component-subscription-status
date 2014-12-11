@@ -8,6 +8,16 @@
     function ($http, $q, STORE_SERVER_URL, PATH_URL) {
       var responseType = ["On Trial", "Trial Expired", "Subscribed", "Suspended", "Cancelled", "Free", "Not Subscribed", "Product Not Found", "Company Not Found", "Error"];
       var responseCode = ["on-trial", "trial-expired", "subscribed", "suspended", "cancelled", "free", "not-subscribed", "product-not-found", "company-not-found", "error"];
+      var _MS_PER_DAY = 1000 * 60 * 60 * 24;
+
+      // a and b are javascript Date objects
+      function dateDiffInDays(a, b) {
+        // Discard the time and time-zone information.
+        var utc1 = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());
+        var utc2 = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
+
+        return Math.floor((utc2 - utc1) / _MS_PER_DAY);
+      }
 
       this.get = function (productCode, companyId) {
         var deferred = $q.defer();
@@ -19,6 +29,9 @@
         $http.get(url).then(function (response) {
           if (response && response.data && response.data.length) {
             var subscriptionStatus = response.data[0];
+
+            subscriptionStatus.plural = "";
+
             var statusIndex = responseType.indexOf(subscriptionStatus.status);
             
             if(statusIndex >= 0) {
@@ -43,6 +56,21 @@
               subscriptionStatus.trialPeriod && subscriptionStatus.trialPeriod > 0) {
               subscriptionStatus.statusCode = "trial-available";
               subscriptionStatus.subscribed = true;
+            }
+
+            if(subscriptionStatus.expiry && subscriptionStatus.statusCode === "on-trial") {
+              subscriptionStatus.expiry = new Date(subscriptionStatus.expiry);
+
+              if(subscriptionStatus.expiry instanceof Date && !isNaN(subscriptionStatus.expiry.valueOf())) {
+                subscriptionStatus.expiry = dateDiffInDays(new Date(), subscriptionStatus.expiry);
+              }
+
+              if(subscriptionStatus.expiry === 0) {
+                subscriptionStatus.plural = "-zero";
+              }
+              else if(subscriptionStatus.expiry > 1) {
+                subscriptionStatus.plural = "-many";
+              }
             }
 
             deferred.resolve(subscriptionStatus);

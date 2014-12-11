@@ -20,45 +20,32 @@
     });
 
     it("Should show the default subscription status", function (done) {
-      expect(element(by.css("#subscription-status h3 a span")).isPresent()).
+      expect(element(by.css("#subscription-status h3 span")).isPresent()).
         to.equal.true;
 
-      expect(element(by.css("#subscription-status h3 a span")).getText()).
+      expect(element(by.css("#subscription-status h3 span")).getText()).
         to.eventually.equal("subscription-status.na");
-
-      expect(element(by.css(".product-expired")).isPresent()).
-        to.eventually.be.true;
     });
-
 
     it("Should show a valid subscription status", function (done) {
       element(by.id("setValid")).click();
 
-      expect(element(by.css("#subscription-status h3 a span")).getText()).
+      expect(element(by.css("#subscription-status h3 span")).getText()).
         to.eventually.equal("subscription-status.free");
-
-      expect(element(by.css(".product-trial")).isPresent()).
-        to.eventually.be.true;
     });
 
     it("Should show an invalid subscription status", function (done) {
       element(by.id("setInvalid")).click();
 
-      expect(element(by.css("#subscription-status h3 a span")).getText()).
+      expect(element(by.css("#subscription-status h3 span")).getText()).
         to.eventually.equal("subscription-status.na");
-
-      expect(element(by.css(".product-expired")).isPresent()).
-        to.eventually.be.true;
     });
 
     it("Should show an expired subscription status", function (done) {
       element(by.id("setExpired")).click();
 
-      expect(element(by.css("#subscription-status h3 a span")).getText()).
+      expect(element(by.css("#subscription-status h3 span")).getText()).
         to.eventually.equal("subscription-status.trial-expired");
-
-      expect(element(by.css(".product-expired")).isPresent()).
-        to.eventually.be.true;
     });
 
   });

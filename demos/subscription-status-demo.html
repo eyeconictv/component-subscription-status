@@ -8,20 +8,43 @@
 
   <p><strong>Dependencies</strong> <span class="label label-info">widget-settings-ui-core</span> <span class="label label-info">gadgets.rpc</span></p>
 
-	<h3 class="add-top">Usage</h3>
+  <h3 class="add-top">Usage</h3>
   <p>Optionally include ng-model parameter for validation.</p>
-	<hljs include="'subscription-status-usage'"></hljs>
+  <hljs include="'subscription-status-usage'"></hljs>
 
-	<h3>Script Includes</h3>
-	<hljs include="'script-includes'"></hljs>
+  <h3>Script Includes</h3>
+  <hljs include="'script-includes'"></hljs>
 
-	<!-- Dynamic Example -->
+  <!-- Dynamic Example -->
   <div class="examples">
-  	<h3>Example</h3>
+    <h3>Example</h3>
     <div id="subscription-status" subscription-status
     product-id="2002" product-code="186c10da8a7eb826dc8a798e8a179cdb7c073ef9" company-id="f114ad26-949d-44b4-87e9-8528afc76ce4"
     ng-model="subscriptionStatus"></div>
-	</div>
+  </div>
+
+  <div class="examples">
+
+    <div class="store-status-2">
+      <h3><i class="fa fa-circle"></i> Trial Available <a href="#">Start Trial</a></h3>
+    </div>
+
+    <div class="store-status-2">
+      <h3 class="warning"><i class="fa fa-circle"></i> <strong>2 days</strong> left on trial <a href="#">Subscribe</a></h3>
+    </div>
+
+    <div class="store-status-2">
+      <h3 class="expired"><i class="fa fa-circle"></i> Trial Expired <a href="#">Subscribe</a></h3>
+    </div>
+
+    <div class="store-status-2">
+      <h3 class="expired"><i class="fa fa-circle"></i> Subscription Suspended <a href="#">View Account</a></h3>
+    </div>
+
+    <div class="store-status-2">
+      <h3 class="expired"><i class="fa fa-circle"></i> Subscription Cancelled <a href="#">View Account</a></h3>
+    </div>
+  </div>
 </div>
 
 

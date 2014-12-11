@@ -15,20 +15,19 @@
     "test",
     "tmp"
   ],
-  "devDependencies": {
-
-  },
+  "devDependencies": {},
   "dependencies": {
     "jquery": "1.11.0",
     "angular": "1.2.18",
     "angular-mocks": "1.2.18",
+    "angular-sanitize": "1.2.18",
     "q": "1.0.1",
     "widget-settings-ui-core": "https://github.com/Rise-Vision/widget-settings-ui-core.git",
     "common-style": "https://github.com/Rise-Vision/common-style.git",
     "rv-common-i18n": "https://github.com/Rise-Vision/common-i18n.git"
   },
   "resolutions": {
-    "angular-translate": "2.2.0",
-    "angular-translate-loader-static-files": "2.2.0"
+    "angular-translate-loader-static-files": "~2.4.2",
+    "angular-translate": "~2.4.2"
   }
 }
