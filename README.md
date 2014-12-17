@@ -1,4 +1,4 @@
-# Subscription Status [![Build Status](http://devtools1.risevision.com:8080/job/Component-Subscription-Status-Master/badge/icon)](http://devtools1.risevision.com:8080/job/Component-Subscription-Status-Master/)
+# Subscription Status [![Circle CI](https://circleci.com/gh/Rise-Vision/component-subscription-status/tree/master.svg?style=svg)](https://circleci.com/gh/Rise-Vision/component-subscription-status/tree/master)
 
 ## Introduction
 
