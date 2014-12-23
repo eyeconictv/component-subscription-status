@@ -186,7 +186,8 @@
         scope: {
           productId: "@",
           productCode: "@",
-          companyId: "@"
+          companyId: "@",
+          showStoreModal: "="
         },
         template: $templateCache.get("subscription-status-template.html"),
         link: function($scope, elm, attrs, ctrl) {
