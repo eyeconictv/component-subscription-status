@@ -109,7 +109,16 @@
           }
         }
       };
-    }]);
+    }])
+    .directive("ngDisableRightClick", function() {
+      return function(scope, element) {
+        element.bind("contextmenu", function(event) {
+          scope.$apply(function() {
+            event.preventDefault();
+          });
+        });
+      };
+    });
 }());
 
 (function () {
@@ -397,7 +406,7 @@ catch(err) { app = angular.module("risevision.widget.common.subscription-status"
 app.run(["$templateCache", function($templateCache) {
   "use strict";
   $templateCache.put("subscription-status-template.html",
-    "<h3>\n" +
+    "<h3 ng-disable-right-click>\n" +
     "  <a href=\"\" ng-click=\"showStoreModal = true;\">\n" +
     "      <i class=\"fa fa-info-circle icon-left\"></i>\n" +
     "  </a>\n" +
@@ -411,6 +420,7 @@ app.run(["$templateCache", function($templateCache) {
     "        <span ng-if=\"subscriptionStatus.statusCode === 'on-trial'\"> - {{ subscriptionStatus.expiry | productTrialDaysToExpiry }}</span>\n" +
     "    </span>\n" +
     "  </a>\n" +
-    "</h3>");
+    "</h3>\n" +
+    "");
 }]);
 })();
