@@ -15,6 +15,7 @@
 
   angular.module("risevision.widget.common.subscription-status.config", [])
     .value("IN_RVA_PATH", "?up_id=iframeId&parent=parentUrl#/product/productId/?inRVA&cid=companyId")
+    .value("IN_RVA_ACCOUNT_PATH", "?up_id=iframeId&parent=parentUrl#/account")
     .value("PATH_URL", "v1/company/companyId/product/status?pc=")
   ;
 
@@ -28,7 +29,8 @@
      "risevision.widget.common.subscription-status.config",
      "risevision.widget.common.subscription-status.service",
      "risevision.widget.common",
-     "risevision.common.i18n"]);
+     "risevision.common.i18n",
+     "ngSanitize"]);
   }());
 
 (function () {
@@ -50,6 +52,7 @@
         template: $templateCache.get("app-subscription-status-template.html"),
         link: function($scope, elm, attrs, ctrl) {
           var storeModalInitialized = false;
+          var storeAccountModalInitialized = false;
 
           $scope.subscriptionStatus = {"status": "N/A", "statusCode": "na", "subscribed": false, "expiry": null};
 
@@ -84,6 +87,14 @@
             }
           });
 
+          var watchAccount = $scope.$watch("showStoreAccountModal", function(show) {
+            if (show) {
+              initStoreAccountModal();
+
+              watchAccount();
+            }
+          });
+
           $scope.$on("store-dialog-save", function() {
             checkSubscriptionStatus();
           });
@@ -107,6 +118,26 @@
               storeModalInitialized = true;
             }
           }
+
+          function initStoreAccountModal() {
+            if (!storeAccountModalInitialized) {
+              var body = $document.find("body").eq(0);
+
+              var angularDomEl = angular.element("<div store-account-modal></div>");
+              angularDomEl.attr({
+                "id": "store-account-modal",
+                "animate": "animate",
+                "show-store-account-modal": "showAccountStoreModal",
+                "company-id": "{{companyId}}",
+                "product-id": "{{productId}}"
+              });
+
+              var modalDomEl = $compile(angularDomEl)($scope);
+              body.append(modalDomEl);
+
+              storeAccountModalInitialized = true;
+            }
+          }
         }
       };
     }])
@@ -119,6 +150,66 @@
         });
       };
     });
+}());
+
+(function () {
+  "use strict";
+
+  angular.module("risevision.widget.common.subscription-status")
+    .directive("storeAccountModal", ["$templateCache", "$location", "gadgetsApi", "STORE_URL", "IN_RVA_ACCOUNT_PATH",
+      function ($templateCache, $location, gadgetsApi, STORE_URL, IN_RVA_ACCOUNT_PATH) {
+        return {
+          restrict: "AE",
+          scope: {
+            showStoreAccountModal: "=",
+            productId: "@",
+            companyId: "@"
+          },
+          template: $templateCache.get("store-account-modal-template.html"),
+          link: function($scope, elm) {
+            var $elm = $(elm);
+            $scope.showStoreAccountModal = true;
+            
+            function registerRPC() {
+              if (!$scope.rpcRegistered && gadgetsApi) {
+                $scope.rpcRegistered = true;
+                
+                gadgetsApi.rpc.register("rscmd_saveSettings", saveSettings);
+                gadgetsApi.rpc.register("rscmd_closeSettings", closeSettings);
+
+                gadgetsApi.rpc.setupReceiver("store-account-modal-frame");
+              }
+            }
+            
+            function saveSettings() {
+              $scope.$emit("store-dialog-save");
+              
+              closeSettings();
+            }
+
+            function closeSettings() {
+              $scope.$apply(function() {
+                $scope.showStoreAccountModal = false;
+              });        
+            }
+            
+            $scope.$watch("showStoreAccountModal", function(showStoreAccountModal) {
+              if (showStoreAccountModal) {
+                registerRPC();
+                
+                var url = STORE_URL + IN_RVA_ACCOUNT_PATH
+                  .replace("productId", $scope.productId)
+                  .replace("companyId", $scope.companyId)
+                  .replace("iframeId", "store-account-modal-frame")
+                  .replace("parentUrl", encodeURIComponent($location.$$absUrl));
+                                
+                $elm.find("#store-account-modal-frame").attr("src", url);
+                
+              }
+            });
+          }
+        };
+    }]);
 }());
 
 (function () {
@@ -201,6 +292,7 @@
         template: $templateCache.get("subscription-status-template.html"),
         link: function($scope, elm, attrs, ctrl) {
           var storeModalInitialized = false;
+          var storeAccountModalInitialized = false;
 
           $scope.subscriptionStatus = {"status": "N/A", "statusCode": "na", "subscribed": false, "expiry": null};
 
@@ -235,6 +327,14 @@
             }
           });
 
+          var watchAccount = $scope.$watch("showStoreAccountModal", function(show) {
+            if (show) {
+              initStoreAccountModal();
+
+              watchAccount();
+            }
+          });
+
           $scope.$on("store-dialog-save", function() {
             checkSubscriptionStatus();
           });
@@ -258,7 +358,32 @@
               storeModalInitialized = true;
             }
           }
+
+          function initStoreAccountModal() {
+            if (!storeAccountModalInitialized) {
+              var body = $document.find("body").eq(0);
+
+              var angularDomEl = angular.element("<div store-account-modal></div>");
+              angularDomEl.attr({
+                "id": "store-account-modal",
+                "animate": "animate",
+                "show-store-account-modal": "showAccountStoreModal",
+                "company-id": "{{companyId}}",
+                "product-id": "{{productId}}"
+              });
+
+              var modalDomEl = $compile(angularDomEl)($scope);
+              body.append(modalDomEl);
+
+              storeAccountModalInitialized = true;
+            }
+          }
         }
+      };
+    }])
+    .filter("to_trusted", ["$sce", function($sce) {
+      return function(text) {
+        return $sce.trustAsHtml(text);
       };
     }]);
 }());
@@ -311,6 +436,16 @@ angular.module("risevision.widget.common.subscription-status")
     function ($http, $q, STORE_SERVER_URL, PATH_URL) {
       var responseType = ["On Trial", "Trial Expired", "Subscribed", "Suspended", "Cancelled", "Free", "Not Subscribed", "Product Not Found", "Company Not Found", "Error"];
       var responseCode = ["on-trial", "trial-expired", "subscribed", "suspended", "cancelled", "free", "not-subscribed", "product-not-found", "company-not-found", "error"];
+      var _MS_PER_DAY = 1000 * 60 * 60 * 24;
+
+      // a and b are javascript Date objects
+      function dateDiffInDays(a, b) {
+        // Discard the time and time-zone information.
+        var utc1 = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());
+        var utc2 = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
+
+        return Math.floor((utc2 - utc1) / _MS_PER_DAY);
+      }
 
       this.get = function (productCode, companyId) {
         var deferred = $q.defer();
@@ -322,6 +457,9 @@ angular.module("risevision.widget.common.subscription-status")
         $http.get(url).then(function (response) {
           if (response && response.data && response.data.length) {
             var subscriptionStatus = response.data[0];
+
+            subscriptionStatus.plural = "";
+
             var statusIndex = responseType.indexOf(subscriptionStatus.status);
             
             if(statusIndex >= 0) {
@@ -346,6 +484,21 @@ angular.module("risevision.widget.common.subscription-status")
               subscriptionStatus.trialPeriod && subscriptionStatus.trialPeriod > 0) {
               subscriptionStatus.statusCode = "trial-available";
               subscriptionStatus.subscribed = true;
+            }
+
+            if(subscriptionStatus.expiry && subscriptionStatus.statusCode === "on-trial") {
+              subscriptionStatus.expiry = new Date(subscriptionStatus.expiry);
+
+              if(subscriptionStatus.expiry instanceof Date && !isNaN(subscriptionStatus.expiry.valueOf())) {
+                subscriptionStatus.expiry = dateDiffInDays(new Date(), subscriptionStatus.expiry);
+              }
+
+              if(subscriptionStatus.expiry === 0) {
+                subscriptionStatus.plural = "-zero";
+              }
+              else if(subscriptionStatus.expiry > 1) {
+                subscriptionStatus.plural = "-many";
+              }
             }
 
             deferred.resolve(subscriptionStatus);
@@ -386,6 +539,25 @@ try { app = angular.module("risevision.widget.common.subscription-status"); }
 catch(err) { app = angular.module("risevision.widget.common.subscription-status", []); }
 app.run(["$templateCache", function($templateCache) {
   "use strict";
+  $templateCache.put("store-account-modal-template.html",
+    "<div class=\"widget\" ng-show=\"showStoreAccountModal\">\n" +
+    "  <div class=\"overlay\" ng-click=\"showStoreAccountModal = false\"></div>\n" +
+    "  <div class=\"settings-center\">\n" +
+    "    <div class=\"wrapper container modal-content\">\n" +
+    "      <iframe id=\"store-account-modal-frame\" name=\"store-account-modal-frame\" class=\"modal-content full-screen-modal\">\n" +
+    "        \n" +
+    "      </iframe>\n" +
+    "    </div>\n" +
+    "  </div>\n" +
+    "</div>");
+}]);
+})();
+
+(function(module) {
+try { app = angular.module("risevision.widget.common.subscription-status"); }
+catch(err) { app = angular.module("risevision.widget.common.subscription-status", []); }
+app.run(["$templateCache", function($templateCache) {
+  "use strict";
   $templateCache.put("store-modal-template.html",
     "<div class=\"widget\" ng-show=\"showStoreModal\">\n" +
     "  <div class=\"overlay\" ng-click=\"showStoreModal = false\"></div>\n" +
@@ -406,20 +578,19 @@ catch(err) { app = angular.module("risevision.widget.common.subscription-status"
 app.run(["$templateCache", function($templateCache) {
   "use strict";
   $templateCache.put("subscription-status-template.html",
-    "<h3 ng-disable-right-click>\n" +
-    "  <a href=\"\" ng-click=\"showStoreModal = true;\">\n" +
-    "      <i class=\"fa fa-info-circle icon-left\"></i>\n" +
-    "  </a>\n" +
-    "  <span class=\"font-weight-normal\">{{'subscription-status.heading' | translate}}</span>\n" +
-    "  <span class=\"hidden-xs font-weight-normal\"> |</span>\n" +
-    "  <div class=\"visible-xs clearfix\"></div>\n" +
+    "<h3 ng-disable-right-click ng-class=\"{ warning: subscriptionStatus.statusCode === 'on-trial', expired: ['trial-expired', 'suspended', 'cancelled'].indexOf(subscriptionStatus.statusCode) >= 0 }\">\n" +
+    "  <i class=\"fa fa-circle\"></i> \n" +
+    "  <span ng-show=\"subscriptionStatus.statusCode !== 'not-subscribed'\" ng-bind-html=\"'subscription-status.' + subscriptionStatus.statusCode + subscriptionStatus.plural | translate:subscriptionStatus | to_trusted\"></span>\n" +
     "  \n" +
-    "  <a href=\"\" ng-click=\"showStoreModal = true;\">\n" +
-    "    <span ng-class=\"{'product-trial':subscriptionStatus.subscribed, 'product-expired':!subscriptionStatus.subscribed}\">\n" +
-    "        {{ 'subscription-status.' + subscriptionStatus.statusCode | translate:subscriptionStatus }}\n" +
-    "        <span ng-if=\"subscriptionStatus.statusCode === 'on-trial'\"> - {{ subscriptionStatus.expiry | productTrialDaysToExpiry }}</span>\n" +
-    "    </span>\n" +
-    "  </a>\n" +
+    "  <span ng-show=\"subscriptionStatus.statusCode === 'trial-available'\">\n" +
+    "    <a href=\"\" ng-click=\"showStoreModal = true;\"><span translate=\"subscription-status.start-trial\"></span></a>\n" +
+    "  </span>\n" +
+    "  <span ng-show=\"['on-trial', 'trial-expired', 'cancelled', 'not-subscribed'].indexOf(subscriptionStatus.statusCode) >= 0\">\n" +
+    "    <a href=\"\" ng-click=\"showStoreModal = true;\"><span translate=\"subscription-status.subscribe\"></span></a>\n" +
+    "  </span>\n" +
+    "  <span ng-show=\"['suspended'].indexOf(subscriptionStatus.statusCode) >= 0\">\n" +
+    "    <a href=\"\" ng-click=\"showStoreAccountModal = true;\"><span translate=\"subscription-status.view-account\"></span></a>\n" +
+    "  </span>\n" +
     "</h3>\n" +
     "");
 }]);
