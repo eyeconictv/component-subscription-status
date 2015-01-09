@@ -12,11 +12,7 @@
 
       // a and b are javascript Date objects
       function dateDiffInDays(a, b) {
-        // Discard the time and time-zone information.
-        var utc1 = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());
-        var utc2 = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
-
-        return Math.floor((utc2 - utc1) / _MS_PER_DAY);
+        return Math.floor((b.getTime() - a.getTime()) / _MS_PER_DAY);
       }
 
       this.get = function (productCode, companyId) {
