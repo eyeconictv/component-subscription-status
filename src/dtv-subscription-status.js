@@ -12,7 +12,7 @@
           productId: "@",
           productCode: "@",
           companyId: "@",
-          showStoreModal: "="
+          showStoreModal: "=?"
         },
         template: $templateCache.get("subscription-status-template.html"),
         link: function($scope, elm, attrs, ctrl) {
