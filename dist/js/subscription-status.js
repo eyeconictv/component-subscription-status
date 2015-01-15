@@ -278,8 +278,8 @@
 
   angular.module("risevision.widget.common.subscription-status")
     .directive("subscriptionStatus", ["$templateCache", "subscriptionStatusService",
-    "$document", "$compile",
-      function ($templateCache, subscriptionStatusService, $document, $compile) {
+    "$document", "$compile", "$rootScope",
+      function ($templateCache, subscriptionStatusService, $document, $compile, $rootScope) {
       return {
         restrict: "AE",
         require: "?ngModel",
@@ -298,6 +298,13 @@
 
           $scope.$watch("companyId", function() {
             checkSubscriptionStatus();
+          });
+
+          $rootScope.$on("refreshSubscriptionStatus", function(event, data) {
+            // Only refresh if currentStatus code matches the provided value, or value is null
+            if(data === null || $scope.subscriptionStatus.statusCode === data) {
+              checkSubscriptionStatus();
+            }
           });
 
           function checkSubscriptionStatus() {
