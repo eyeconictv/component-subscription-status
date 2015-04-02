@@ -18,8 +18,8 @@
   ;
 
   angular.module("risevision.widget.common.subscription-status.config", [])
-    .value("IN_RVA_PATH", "?up_id=iframeId&parent=parentUrl#/product/productId/?inRVA&cid=companyId")
-    .value("IN_RVA_ACCOUNT_PATH", "?up_id=iframeId&parent=parentUrl#/account")
+    .value("IN_RVA_PATH", "/product/productId/?up_id=iframeId&parent=parentUrl&inRVA=true&cid=companyId")
+    .value("IN_RVA_ACCOUNT_PATH", "/account?up_id=iframeId&parent=parentUrl&inRVA=true")
     .value("PATH_URL", "v1/company/companyId/product/status?pc=")
   ;
 
