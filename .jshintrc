@@ -245,6 +245,11 @@
     /* RV Globals */
     "shoppingCart": false,
     "showSpin": false,
-    "hideSpin": false
+    "hideSpin": false,
+
+    /* Subscription status specifics */
+    "browser": false,
+    "element": false,
+    "by": false
   }
 }
