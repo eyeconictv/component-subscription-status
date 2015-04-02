@@ -19,7 +19,7 @@
       browser.get("/test/e2e/ng-subscription-status-scenarios.html");
     });
 
-    it("Should show the default subscription status", function (done) {
+    it("Should show the default subscription status", function () {
       expect(element(by.css("#subscription-status h3 span")).isPresent()).
         to.equal.true;
 
@@ -27,21 +27,21 @@
         to.eventually.equal("subscription-status.na");
     });
 
-    it("Should show a valid subscription status", function (done) {
+    it("Should show a valid subscription status", function () {
       element(by.id("setValid")).click();
 
       expect(element(by.css("#subscription-status h3 span")).getText()).
         to.eventually.equal("subscription-status.free");
     });
 
-    it("Should show an invalid subscription status", function (done) {
+    it("Should show an invalid subscription status", function () {
       element(by.id("setInvalid")).click();
 
       expect(element(by.css("#subscription-status h3 span")).getText()).
         to.eventually.equal("subscription-status.na");
     });
 
-    it("Should show an expired subscription status", function (done) {
+    it("Should show an expired subscription status", function () {
       element(by.id("setExpired")).click();
 
       expect(element(by.css("#subscription-status h3 span")).getText()).
