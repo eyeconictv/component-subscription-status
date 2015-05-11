@@ -566,7 +566,7 @@ app.run(["$templateCache", function($templateCache) {
     "  <div class=\"overlay\" ng-click=\"showStoreModal = false\"></div>\n" +
     "  <div class=\"settings-center\">\n" +
     "    <div class=\"wrapper container modal-content\">\n" +
-    "      <iframe id=\"store-modal-frame\" name=\"store-modal-frame\" class=\"modal-content full-screen-modal\">\n" +
+    "      <iframe id=\"store-modal-frame\" name=\"store-modal-frame\" class=\"full-screen-modal\">\n" +
     "        \n" +
     "      </iframe>\n" +
     "    </div>\n" +
@@ -581,20 +581,25 @@ catch(err) { app = angular.module("risevision.widget.common.subscription-status"
 app.run(["$templateCache", function($templateCache) {
   "use strict";
   $templateCache.put("subscription-status-template.html",
-    "<h3 ng-disable-right-click ng-class=\"{ warning: subscriptionStatus.statusCode === 'on-trial', expired: ['trial-expired', 'suspended', 'cancelled'].indexOf(subscriptionStatus.statusCode) >= 0 }\">\n" +
-    "  <i class=\"fa fa-circle\"></i> \n" +
+    "<h3 ng-disable-right-click>\n" +
     "  <span ng-show=\"subscriptionStatus.statusCode !== 'not-subscribed'\" ng-bind-html=\"'subscription-status.' + subscriptionStatus.statusCode + subscriptionStatus.plural | translate:subscriptionStatus | to_trusted\"></span>\n" +
-    "  \n" +
-    "  <span ng-show=\"subscriptionStatus.statusCode === 'trial-available'\">\n" +
-    "    <a href=\"\" ng-click=\"showStoreModal = true;\"><span translate=\"subscription-status.start-trial\"></span></a>\n" +
-    "  </span>\n" +
-    "  <span ng-show=\"['on-trial', 'trial-expired', 'cancelled', 'not-subscribed'].indexOf(subscriptionStatus.statusCode) >= 0\">\n" +
-    "    <a href=\"\" ng-click=\"showStoreModal = true;\"><span translate=\"subscription-status.subscribe\"></span></a>\n" +
-    "  </span>\n" +
-    "  <span ng-show=\"['suspended'].indexOf(subscriptionStatus.statusCode) >= 0\">\n" +
-    "    <a href=\"\" ng-click=\"showStoreAccountModal = true;\"><span translate=\"subscription-status.view-account\"></span></a>\n" +
-    "  </span>\n" +
     "</h3>\n" +
+    "  \n" +
+    "<span ng-show=\"subscriptionStatus.statusCode === 'trial-available'\">\n" +
+    "  <button class=\"btn btn-primary btn-xs\" ng-click=\"showStoreModal = true;\">\n" +
+    "    <span translate=\"subscription-status.start-trial\"></span>\n" +
+    "  </button>\n" +
+    "</span>\n" +
+    "<span ng-show=\"['on-trial', 'trial-expired', 'cancelled', 'not-subscribed'].indexOf(subscriptionStatus.statusCode) >= 0\">\n" +
+    "  <button class=\"btn btn-primary btn-xs\" ng-click=\"showStoreModal = true;\">\n" +
+    "    <span translate=\"subscription-status.subscribe\"></span>\n" +
+    "  </button>\n" +
+    "</span>\n" +
+    "<span ng-show=\"['suspended'].indexOf(subscriptionStatus.statusCode) >= 0\">\n" +
+    "  <button class=\"btn btn-primary btn-xs\" ng-click=\"showStoreAccountModal = true;\">\n" +
+    "    <span translate=\"subscription-status.view-account\"></span>\n" +
+    "  </button>\n" +
+    "</span>\n" +
     "");
 }]);
 })();

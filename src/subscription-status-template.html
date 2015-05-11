@@ -1,14 +1,19 @@
-<h3 ng-disable-right-click ng-class="{ warning: subscriptionStatus.statusCode === 'on-trial', expired: ['trial-expired', 'suspended', 'cancelled'].indexOf(subscriptionStatus.statusCode) >= 0 }">
-  <i class="fa fa-circle"></i> 
+<h3 ng-disable-right-click>
   <span ng-show="subscriptionStatus.statusCode !== 'not-subscribed'" ng-bind-html="'subscription-status.' + subscriptionStatus.statusCode + subscriptionStatus.plural | translate:subscriptionStatus | to_trusted"></span>
-  
-  <span ng-show="subscriptionStatus.statusCode === 'trial-available'">
-    <a href="" ng-click="showStoreModal = true;"><span translate="subscription-status.start-trial"></span></a>
-  </span>
-  <span ng-show="['on-trial', 'trial-expired', 'cancelled', 'not-subscribed'].indexOf(subscriptionStatus.statusCode) >= 0">
-    <a href="" ng-click="showStoreModal = true;"><span translate="subscription-status.subscribe"></span></a>
-  </span>
-  <span ng-show="['suspended'].indexOf(subscriptionStatus.statusCode) >= 0">
-    <a href="" ng-click="showStoreAccountModal = true;"><span translate="subscription-status.view-account"></span></a>
-  </span>
 </h3>
+  
+<span ng-show="subscriptionStatus.statusCode === 'trial-available'">
+  <button class="btn btn-primary btn-xs" ng-click="showStoreModal = true;">
+    <span translate="subscription-status.start-trial"></span>
+  </button>
+</span>
+<span ng-show="['on-trial', 'trial-expired', 'cancelled', 'not-subscribed'].indexOf(subscriptionStatus.statusCode) >= 0">
+  <button class="btn btn-primary btn-xs" ng-click="showStoreModal = true;">
+    <span translate="subscription-status.subscribe"></span>
+  </button>
+</span>
+<span ng-show="['suspended'].indexOf(subscriptionStatus.statusCode) >= 0">
+  <button class="btn btn-primary btn-xs" ng-click="showStoreAccountModal = true;">
+    <span translate="subscription-status.view-account"></span>
+  </button>
+</span>
