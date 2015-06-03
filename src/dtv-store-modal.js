@@ -34,9 +34,11 @@
             }
 
             function closeSettings() {
+              $scope.$emit("store-dialog-close");
+
               $scope.$apply(function() {
                 $scope.showStoreModal = false;
-              });        
+              });
             }
             
             $scope.$watch("showStoreModal", function(showStoreModal) {

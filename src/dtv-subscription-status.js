@@ -12,6 +12,7 @@
           productId: "@",
           productCode: "@",
           companyId: "@",
+          expandedFormat: "@",
           showStoreModal: "=?"
         },
         template: $templateCache.get("subscription-status-template.html"),
@@ -36,6 +37,10 @@
             if ($scope.productCode && $scope.productId && $scope.companyId) {
               subscriptionStatusService.get($scope.productCode, $scope.companyId).then(function(subscriptionStatus) {
                 if (subscriptionStatus) {
+                  if(!$scope.subscriptionStatus || $scope.subscriptionStatus.status !== subscriptionStatus.status) {
+                    $rootScope.$emit("subscription-status:changed", subscriptionStatus);
+                  }
+                  
                   $scope.subscriptionStatus = subscriptionStatus;
                 }
               },
@@ -68,6 +73,10 @@
           });
 
           $scope.$on("store-dialog-save", function() {
+            checkSubscriptionStatus();
+          });
+
+          $scope.$on("store-dialog-close", function() {
             checkSubscriptionStatus();
           });
 
