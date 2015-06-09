@@ -248,9 +248,11 @@
             }
 
             function closeSettings() {
+              $scope.$emit("store-dialog-close");
+
               $scope.$apply(function() {
                 $scope.showStoreModal = false;
-              });        
+              });
             }
             
             $scope.$watch("showStoreModal", function(showStoreModal) {
@@ -287,6 +289,7 @@
           productId: "@",
           productCode: "@",
           companyId: "@",
+          expandedFormat: "@",
           showStoreModal: "=?"
         },
         template: $templateCache.get("subscription-status-template.html"),
@@ -311,6 +314,10 @@
             if ($scope.productCode && $scope.productId && $scope.companyId) {
               subscriptionStatusService.get($scope.productCode, $scope.companyId).then(function(subscriptionStatus) {
                 if (subscriptionStatus) {
+                  if(!$scope.subscriptionStatus || $scope.subscriptionStatus.status !== subscriptionStatus.status) {
+                    $rootScope.$emit("subscription-status:changed", subscriptionStatus);
+                  }
+                  
                   $scope.subscriptionStatus = subscriptionStatus;
                 }
               },
@@ -343,6 +350,10 @@
           });
 
           $scope.$on("store-dialog-save", function() {
+            checkSubscriptionStatus();
+          });
+
+          $scope.$on("store-dialog-close", function() {
             checkSubscriptionStatus();
           });
 
@@ -581,25 +592,54 @@ catch(err) { app = angular.module("risevision.widget.common.subscription-status"
 app.run(["$templateCache", function($templateCache) {
   "use strict";
   $templateCache.put("subscription-status-template.html",
-    "<h3 ng-disable-right-click>\n" +
-    "  <span ng-show=\"subscriptionStatus.statusCode !== 'not-subscribed'\" ng-bind-html=\"'subscription-status.' + subscriptionStatus.statusCode + subscriptionStatus.plural | translate:subscriptionStatus | to_trusted\"></span>\n" +
-    "</h3>\n" +
+    "<div ng-show=\"!expandedFormat\">\n" +
+    "  <h3 ng-disable-right-click>\n" +
+    "    <span ng-show=\"subscriptionStatus.statusCode !== 'not-subscribed'\" ng-bind-html=\"'subscription-status.' + subscriptionStatus.statusCode + subscriptionStatus.plural | translate:subscriptionStatus | to_trusted\"></span>\n" +
+    "  </h3>\n" +
     "  \n" +
-    "<span ng-show=\"subscriptionStatus.statusCode === 'trial-available'\">\n" +
-    "  <button class=\"btn btn-primary btn-xs\" ng-click=\"showStoreModal = true;\">\n" +
-    "    <span translate=\"subscription-status.start-trial\"></span>\n" +
-    "  </button>\n" +
-    "</span>\n" +
-    "<span ng-show=\"['on-trial', 'trial-expired', 'cancelled', 'not-subscribed'].indexOf(subscriptionStatus.statusCode) >= 0\">\n" +
-    "  <button class=\"btn btn-primary btn-xs\" ng-click=\"showStoreModal = true;\">\n" +
-    "    <span translate=\"subscription-status.subscribe\"></span>\n" +
-    "  </button>\n" +
-    "</span>\n" +
-    "<span ng-show=\"['suspended'].indexOf(subscriptionStatus.statusCode) >= 0\">\n" +
-    "  <button class=\"btn btn-primary btn-xs\" ng-click=\"showStoreAccountModal = true;\">\n" +
-    "    <span translate=\"subscription-status.view-account\"></span>\n" +
-    "  </button>\n" +
-    "</span>\n" +
+    "  <span ng-show=\"subscriptionStatus.statusCode === 'trial-available'\">\n" +
+    "    <button class=\"btn btn-primary btn-xs\" ng-click=\"showStoreModal = true;\">\n" +
+    "      <span translate=\"subscription-status.start-trial\"></span>\n" +
+    "    </button>\n" +
+    "  </span>\n" +
+    "  <span ng-show=\"['on-trial', 'trial-expired', 'cancelled', 'not-subscribed'].indexOf(subscriptionStatus.statusCode) >= 0\">\n" +
+    "    <button class=\"btn btn-primary btn-xs\" ng-click=\"showStoreModal = true;\">\n" +
+    "      <span translate=\"subscription-status.subscribe\"></span>\n" +
+    "    </button>\n" +
+    "  </span>\n" +
+    "  <span ng-show=\"['suspended'].indexOf(subscriptionStatus.statusCode) >= 0\">\n" +
+    "    <button class=\"btn btn-primary btn-xs\" ng-click=\"showStoreAccountModal = true;\">\n" +
+    "      <span translate=\"subscription-status.view-account\"></span>\n" +
+    "    </button>\n" +
+    "  </span>\n" +
+    "</div>\n" +
+    "\n" +
+    "<div ng-show=\"expandedFormat\">\n" +
+    "  <div class=\"subscription-status trial\" ng-show=\"subscriptionStatus.statusCode === 'on-trial'\">\n" +
+    "    <span ng-bind-html=\"'subscription-status.expanded-' + subscriptionStatus.statusCode + subscriptionStatus.plural | translate:subscriptionStatus | to_trusted\"></span>\n" +
+    "    <button type=\"button\" class=\"btn btn-white\" ng-click=\"showStoreModal = true;\">\n" +
+    "      <span translate=\"subscription-status.subscribe-now\"></span>\n" +
+    "    </button>\n" +
+    "  </div>\n" +
+    "  <div class=\"subscription-status expired\" ng-show=\"subscriptionStatus.statusCode === 'expired'\">\n" +
+    "    <span translate=\"subscription-status.expanded-expired\"></span>\n" +
+    "    <button type=\"button\" class=\"btn btn-white\" ng-click=\"showStoreModal = true;\">\n" +
+    "      <span translate=\"subscription-status.subscribe-now\"></span>\n" +
+    "    </button>\n" +
+    "  </div>\n" +
+    "  <div class=\"subscription-status cancelled\" ng-show=\"subscriptionStatus.statusCode === 'cancelled'\">\n" +
+    "   <span translate=\"subscription-status.expanded-cancelled\"></span>\n" +
+    "    <button type=\"button\" class=\"btn btn-white\" ng-click=\"showStoreModal = true;\">\n" +
+    "      <span translate=\"subscription-status.subscribe-now\"></span>\n" +
+    "    </button>\n" +
+    "  </div>\n" +
+    "  <div class=\"subscription-status suspended\" ng-show=\"subscriptionStatus.statusCode === 'suspended'\">\n" +
+    "    <span translate=\"subscription-status.expanded-suspended\"></span>\n" +
+    "    <button type=\"button\" class=\"btn btn-white\" ng-click=\"showStoreAccountModal = true;\">\n" +
+    "      <span translate=\"subscription-status.view-invoices\"></span>\n" +
+    "    </button>\n" +
+    "  </div>\n" +
+    "</div>\n" +
     "");
 }]);
 })();
