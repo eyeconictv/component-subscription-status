@@ -621,7 +621,7 @@ app.run(["$templateCache", function($templateCache) {
     "      <span translate=\"subscription-status.subscribe-now\"></span>\n" +
     "    </button>\n" +
     "  </div>\n" +
-    "  <div class=\"subscription-status expired\" ng-show=\"subscriptionStatus.statusCode === 'expired'\">\n" +
+    "  <div class=\"subscription-status expired\" ng-show=\"subscriptionStatus.statusCode === 'trial-expired'\">\n" +
     "    <span translate=\"subscription-status.expanded-expired\"></span>\n" +
     "    <button type=\"button\" class=\"btn btn-white\" ng-click=\"showStoreModal = true;\">\n" +
     "      <span translate=\"subscription-status.subscribe-now\"></span>\n" +
