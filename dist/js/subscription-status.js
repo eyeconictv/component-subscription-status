@@ -529,9 +529,9 @@ angular.module("risevision.widget.common.subscription-status")
 }());
 
 (function(module) {
-try { app = angular.module("risevision.widget.common.subscription-status"); }
-catch(err) { app = angular.module("risevision.widget.common.subscription-status", []); }
-app.run(["$templateCache", function($templateCache) {
+try { module = angular.module("risevision.widget.common.subscription-status"); }
+catch(err) { module = angular.module("risevision.widget.common.subscription-status", []); }
+module.run(["$templateCache", function($templateCache) {
   "use strict";
   $templateCache.put("app-subscription-status-template.html",
     "<a id=\"app-subscription-status\" href=\"\"\n" +
@@ -549,9 +549,9 @@ app.run(["$templateCache", function($templateCache) {
 })();
 
 (function(module) {
-try { app = angular.module("risevision.widget.common.subscription-status"); }
-catch(err) { app = angular.module("risevision.widget.common.subscription-status", []); }
-app.run(["$templateCache", function($templateCache) {
+try { module = angular.module("risevision.widget.common.subscription-status"); }
+catch(err) { module = angular.module("risevision.widget.common.subscription-status", []); }
+module.run(["$templateCache", function($templateCache) {
   "use strict";
   $templateCache.put("store-account-modal-template.html",
     "<div class=\"widget\" ng-show=\"showStoreAccountModal\">\n" +
@@ -568,9 +568,9 @@ app.run(["$templateCache", function($templateCache) {
 })();
 
 (function(module) {
-try { app = angular.module("risevision.widget.common.subscription-status"); }
-catch(err) { app = angular.module("risevision.widget.common.subscription-status", []); }
-app.run(["$templateCache", function($templateCache) {
+try { module = angular.module("risevision.widget.common.subscription-status"); }
+catch(err) { module = angular.module("risevision.widget.common.subscription-status", []); }
+module.run(["$templateCache", function($templateCache) {
   "use strict";
   $templateCache.put("store-modal-template.html",
     "<div class=\"widget\" ng-show=\"showStoreModal\">\n" +
@@ -587,9 +587,9 @@ app.run(["$templateCache", function($templateCache) {
 })();
 
 (function(module) {
-try { app = angular.module("risevision.widget.common.subscription-status"); }
-catch(err) { app = angular.module("risevision.widget.common.subscription-status", []); }
-app.run(["$templateCache", function($templateCache) {
+try { module = angular.module("risevision.widget.common.subscription-status"); }
+catch(err) { module = angular.module("risevision.widget.common.subscription-status", []); }
+module.run(["$templateCache", function($templateCache) {
   "use strict";
   $templateCache.put("subscription-status-template.html",
     "<div ng-show=\"!expandedFormat\">\n" +
