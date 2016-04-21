@@ -53,4 +53,16 @@ describe("Services: subscriptionStatusService", function() {
     });
   });
 
+  it("should return active subscription for cancelled product", function(done) {
+    inject(function(subscriptionStatusService) {
+      subscriptionStatusService.get("3", "12345").then(function(data){
+        expect(data).be.defined;
+        expect(data.status).be.equal("Cancelled");
+        expect(data.subscribed).be.equal(true);
+
+        done();
+      });
+    });
+  });
+
 });

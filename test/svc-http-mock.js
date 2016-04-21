@@ -17,14 +17,29 @@
 
         console.log(url);
 
-        if (url && url.indexOf("/company/invalid/") !== -1) {
-          response.data[0].status = "";
+        if (url && url.indexOf("/product/status?") !== -1) {
+          if (url.indexOf("/company/invalid/") !== -1) {
+            response.data[0].status = "";
+          }
+          else if (url.indexOf("pc=2") !== -1) {
+            response.data[0].status = "Trial Expired";
+          }
+          else if (url.indexOf("pc=3") !== -1) {
+            response.data[0].status = "Cancelled";
+          }    
+          else {
+            response.data[0].status = "Free";
+          }      
         }
-        else if (url && url.indexOf("/product/status?pc=2") !== -1) {
-          response.data[0].status = "Trial Expired";
-        }
-        else {
-          response.data[0].status = "Free";
+        else if (url && url.indexOf("widget/auth?") !== -1) {
+          response = {
+            data: {
+              authorized: false
+            }
+          };
+          if (url.indexOf("pc=3") !== -1) {
+            response.data.authorized = true;
+          }
         }
 
         deferred.resolve(response);
