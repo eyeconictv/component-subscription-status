@@ -2,9 +2,9 @@
   "use strict";
 
   angular.module("risevision.widget.common.subscription-status")
-    .directive("subscriptionStatus", ["$rootScope", "$templateCache", 
+    .directive("subscriptionStatus", ["$rootScope", "$templateCache",
     "subscriptionStatusService", "STORE_URL", "ACCOUNT_PATH", "IN_RVA_PATH",
-      function ($rootScope, $templateCache, subscriptionStatusService, 
+      function ($rootScope, $templateCache, subscriptionStatusService,
         STORE_URL, ACCOUNT_PATH, IN_RVA_PATH) {
       return {
         restrict: "AE",
@@ -14,7 +14,8 @@
           productCode: "@",
           companyId: "@",
           expandedFormat: "@",
-          showStoreModal: "=?"
+          showStoreModal: "=?",
+          customProductLink: "@"
         },
         template: $templateCache.get("subscription-status-template.html"),
         link: function($scope, elm, attrs, ctrl) {
@@ -24,14 +25,19 @@
             $scope.storeAccountUrl = STORE_URL + ACCOUNT_PATH
                               .replace("companyId", $scope.companyId);
 
-            $scope.storeUrl = STORE_URL + IN_RVA_PATH
+            if($scope.customProductLink) {
+              $scope.storeUrl = $scope.customProductLink;
+            }
+            else {
+              $scope.storeUrl = STORE_URL + IN_RVA_PATH
                 .replace("productId", $scope.productId)
                 .replace("companyId", $scope.companyId);
+            }
           };
-          
+
           $scope.$watch("companyId", function() {
             checkSubscriptionStatus();
-            
+
             updateUrls();
           });
 
@@ -49,7 +55,7 @@
                   if(!$scope.subscriptionStatus || $scope.subscriptionStatus.status !== subscriptionStatus.status) {
                     $rootScope.$emit("subscription-status:changed", subscriptionStatus);
                   }
-                  
+
                   $scope.subscriptionStatus = subscriptionStatus;
                 }
               },
