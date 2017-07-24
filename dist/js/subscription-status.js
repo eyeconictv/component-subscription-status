@@ -18,6 +18,7 @@
     .value("ACCOUNT_PATH", "account?cid=companyId")
     .value("PATH_URL", "v1/company/companyId/product/status?pc=")
     .value("AUTH_PATH_URL", "v1/widget/auth?cid=companyId&pc=")
+    .value("PATH_URL_BY_DISPLAY_ID", "v1/product/productCode/status?displayIds=")
   ;
 
 }());
@@ -135,6 +136,7 @@
           productId: "@",
           productCode: "@",
           companyId: "@",
+          displayId: "@",
           expandedFormat: "@",
           showStoreModal: "=?",
           customProductLink: "@",
@@ -160,8 +162,8 @@
           };
 
           function checkSubscriptionStatus() {
-            if ($scope.productCode && $scope.productId && $scope.companyId) {
-              subscriptionStatusService.get($scope.productCode, $scope.companyId).then(function(subscriptionStatus) {
+            if ($scope.productCode && $scope.productId && ($scope.companyId || $scope.displayId )) {
+              subscriptionStatusService.get($scope.productCode, $scope.companyId, $scope.displayId).then(function(subscriptionStatus) {
                 if (subscriptionStatus) {
                   if(!$scope.subscriptionStatus || $scope.subscriptionStatus.status !== subscriptionStatus.status) {
                     $rootScope.$emit("subscription-status:changed", subscriptionStatus);
@@ -182,11 +184,15 @@
             updateUrls();
           });
 
-          $rootScope.$on("refreshSubscriptionStatus", function(event, data) {
+          var subscriptionStatusListener = $rootScope.$on("refreshSubscriptionStatus", function(event, data) {
             // Only refresh if currentStatus code matches the provided value, or value is null
             if(data === null || $scope.subscriptionStatus.statusCode === data) {
               checkSubscriptionStatus();
             }
+          });
+          
+          $scope.$on("$destroy", function () {
+            subscriptionStatusListener();
           });
 
           if (ctrl) {
@@ -249,8 +255,8 @@ angular.module("risevision.widget.common.subscription-status")
     ["risevision.common.config",
      "risevision.widget.common.subscription-status.config"])
     .service("subscriptionStatusService", ["$http", "$q", "STORE_SERVER_URL", 
-    "PATH_URL", "AUTH_PATH_URL",
-    function ($http, $q, STORE_SERVER_URL, PATH_URL, AUTH_PATH_URL) {
+    "PATH_URL", "AUTH_PATH_URL", "PATH_URL_BY_DISPLAY_ID",
+    function ($http, $q, STORE_SERVER_URL, PATH_URL, AUTH_PATH_URL, PATH_URL_BY_DISPLAY_ID) {
       var responseType = ["On Trial", "Trial Expired", "Subscribed", "Suspended", "Cancelled", "Free", "Not Subscribed", "Product Not Found", "Company Not Found", "Error"];
       var responseCode = ["on-trial", "trial-expired", "subscribed", "suspended", "cancelled", "free", "not-subscribed", "product-not-found", "company-not-found", "error"];
       var _MS_PER_DAY = 1000 * 60 * 60 * 24;
@@ -279,12 +285,18 @@ angular.module("risevision.widget.common.subscription-status")
         return deferred.promise;
       };
       
-      var checkSubscriptionStatus = function(productCode, companyId) {
+      var checkSubscriptionStatus = function(productCode, companyId, displayId) {
         var deferred = $q.defer();
 
         var url = STORE_SERVER_URL +
           PATH_URL.replace("companyId", companyId) +
           productCode;
+
+        if (displayId) {
+          url = STORE_SERVER_URL +
+          PATH_URL_BY_DISPLAY_ID.replace("productCode", productCode) +
+          displayId;
+        }
 
         $http.get(url).then(function (response) {
           if (response && response.data && response.data.length) {
@@ -342,8 +354,8 @@ angular.module("risevision.widget.common.subscription-status")
         return deferred.promise;
       };
 
-      this.get = function (productCode, companyId) {
-        return checkSubscriptionStatus(productCode, companyId)
+      this.get = function (productCode, companyId, displayId) {
+        return checkSubscriptionStatus(productCode, companyId, displayId)
           .then(function(subscriptionStatus) {
             if (subscriptionStatus.subscribed === false) {
               // double check store authorization in case they're authorized
