@@ -55,10 +55,6 @@
         link: function($scope, elm, attrs, ctrl) {
           $scope.subscriptionStatus = {"status": "N/A", "statusCode": "na", "subscribed": false, "expiry": null};
 
-          $scope.$watch("companyId", function() {
-            checkSubscriptionStatus();
-          });
-
           function checkSubscriptionStatus() {
             if ($scope.productCode && $scope.productId && $scope.companyId) {
               subscriptionStatusService.get($scope.productCode, $scope.companyId).then(function(subscriptionStatus) {
@@ -71,6 +67,10 @@
               });
             }
           }
+
+          $scope.$watch("companyId", function() {
+            checkSubscriptionStatus();
+          });
 
           if (ctrl) {
             $scope.$watch("subscriptionStatus", function(subscriptionStatus) {
@@ -137,11 +137,13 @@
           companyId: "@",
           expandedFormat: "@",
           showStoreModal: "=?",
-          customProductLink: "@"
+          customProductLink: "@",
+          customMessages: "@"
         },
         template: $templateCache.get("subscription-status-template.html"),
         link: function($scope, elm, attrs, ctrl) {
           $scope.subscriptionStatus = {"status": "N/A", "statusCode": "na", "subscribed": false, "expiry": null};
+          $scope.messagesPrefix = $scope.customMessages ? $scope.customMessages : "subscription-status";
 
           var updateUrls = function() {
             $scope.storeAccountUrl = STORE_URL + ACCOUNT_PATH
@@ -156,19 +158,6 @@
                 .replace("companyId", $scope.companyId);
             }
           };
-
-          $scope.$watch("companyId", function() {
-            checkSubscriptionStatus();
-
-            updateUrls();
-          });
-
-          $rootScope.$on("refreshSubscriptionStatus", function(event, data) {
-            // Only refresh if currentStatus code matches the provided value, or value is null
-            if(data === null || $scope.subscriptionStatus.statusCode === data) {
-              checkSubscriptionStatus();
-            }
-          });
 
           function checkSubscriptionStatus() {
             if ($scope.productCode && $scope.productId && $scope.companyId) {
@@ -186,6 +175,19 @@
               });
             }
           }
+
+          $scope.$watch("companyId", function() {
+            checkSubscriptionStatus();
+
+            updateUrls();
+          });
+
+          $rootScope.$on("refreshSubscriptionStatus", function(event, data) {
+            // Only refresh if currentStatus code matches the provided value, or value is null
+            if(data === null || $scope.subscriptionStatus.statusCode === data) {
+              checkSubscriptionStatus();
+            }
+          });
 
           if (ctrl) {
             $scope.$watch("subscriptionStatus", function(subscriptionStatus) {
@@ -233,7 +235,7 @@ angular.module("risevision.widget.common.subscription-status")
           msg = expiresToday !== null ? expiresToday(params) : "";
         }
       } catch (e) {
-        msg = expiresToday !== null ? expiresToday(params) : "";
+        // Nothing to do
       }
 
       return msg;
@@ -389,49 +391,49 @@ module.run(["$templateCache", function($templateCache) {
   $templateCache.put("subscription-status-template.html",
     "<div ng-show=\"!expandedFormat\">\n" +
     "  <h3 ng-disable-right-click>\n" +
-    "    <span ng-show=\"subscriptionStatus.statusCode !== 'not-subscribed'\" ng-bind-html=\"'subscription-status.' + subscriptionStatus.statusCode + subscriptionStatus.plural | translate:subscriptionStatus | to_trusted\"></span>\n" +
+    "    <span ng-show=\"subscriptionStatus.statusCode !== 'not-subscribed'\" ng-bind-html=\"messagesPrefix + '.' + subscriptionStatus.statusCode + subscriptionStatus.plural | translate:subscriptionStatus | to_trusted\"></span>\n" +
     "  </h3>\n" +
     "  \n" +
     "  <span ng-show=\"subscriptionStatus.statusCode === 'trial-available'\">\n" +
     "    <button class=\"btn btn-primary btn-xs\" ng-click=\"showStoreModal = true;\">\n" +
-    "      <span translate=\"subscription-status.start-trial\"></span>\n" +
+    "      <span translate=\"{{messagesPrefix}}.start-trial\"></span>\n" +
     "    </button>\n" +
     "  </span>\n" +
     "  <span ng-show=\"['on-trial', 'trial-expired', 'cancelled', 'not-subscribed'].indexOf(subscriptionStatus.statusCode) >= 0\">\n" +
     "    <a class=\"btn btn-primary btn-xs\" ng-href=\"{{storeUrl}}\" target=\"_blank\">\n" +
-    "      <span translate=\"subscription-status.subscribe\"></span>\n" +
+    "      <span translate=\"{{messagesPrefix}}.subscribe\"></span>\n" +
     "    </a>\n" +
     "  </span>\n" +
     "  <span ng-show=\"['suspended'].indexOf(subscriptionStatus.statusCode) >= 0\">\n" +
     "    <a type=\"button\" class=\"btn btn-primary btn-xs\" ng-href=\"{{storeAccountUrl}}\" target=\"_blank\">\n" +
-    "      <span translate=\"subscription-status.view-account\"></span>\n" +
+    "      <span translate=\"{{messagesPrefix}}.view-account\"></span>\n" +
     "    </a>\n" +
     "  </span>\n" +
     "</div>\n" +
     "\n" +
     "<div ng-show=\"expandedFormat\">\n" +
     "  <div class=\"subscription-status trial\" ng-show=\"subscriptionStatus.statusCode === 'on-trial'\">\n" +
-    "    <span ng-bind-html=\"'subscription-status.expanded-' + subscriptionStatus.statusCode + subscriptionStatus.plural | translate:subscriptionStatus | to_trusted\"></span>\n" +
+    "    <span ng-bind-html=\"messagesPrefix + '.expanded-' + subscriptionStatus.statusCode + subscriptionStatus.plural | translate:subscriptionStatus | to_trusted\"></span>\n" +
     "    <a type=\"button\" class=\"btn btn-primary u_margin-left\" ng-href=\"{{storeUrl}}\" target=\"_blank\">\n" +
-    "      <span translate=\"subscription-status.subscribe-now\"></span>\n" +
+    "      <span translate=\"{{messagesPrefix}}.subscribe-now\"></span>\n" +
     "    </a>\n" +
     "  </div>\n" +
     "  <div class=\"subscription-status expired\" ng-show=\"subscriptionStatus.statusCode === 'trial-expired'\">\n" +
-    "    <span translate=\"subscription-status.expanded-expired\"></span>\n" +
+    "    <span translate=\"{{messagesPrefix}}.expanded-expired\"></span>\n" +
     "    <a type=\"button\" class=\"btn btn-primary u_margin-left\" ng-href=\"{{storeUrl}}\" target=\"_blank\">\n" +
-    "      <span translate=\"subscription-status.subscribe-now\"></span>\n" +
+    "      <span translate=\"{{messagesPrefix}}.subscribe-now\"></span>\n" +
     "    </a>\n" +
     "  </div>\n" +
     "  <div class=\"subscription-status cancelled\" ng-show=\"subscriptionStatus.statusCode === 'cancelled'\">\n" +
-    "   <span translate=\"subscription-status.expanded-cancelled\"></span>\n" +
+    "   <span translate=\"{{messagesPrefix}}.expanded-cancelled\"></span>\n" +
     "    <a type=\"button\" class=\"btn btn-primary u_margin-left\" ng-href=\"{{storeUrl}}\" target=\"_blank\">\n" +
-    "      <span translate=\"subscription-status.subscribe-now\"></span>\n" +
+    "      <span translate=\"{{messagesPrefix}}.subscribe-now\"></span>\n" +
     "    </a>\n" +
     "  </div>\n" +
     "  <div class=\"subscription-status suspended\" ng-show=\"subscriptionStatus.statusCode === 'suspended'\">\n" +
-    "    <span translate=\"subscription-status.expanded-suspended\"></span>\n" +
+    "    <span translate=\"{{messagesPrefix}}.expanded-suspended\"></span>\n" +
     "    <a type=\"button\" class=\"btn btn-primary u_margin-left\" ng-href=\"{{storeAccountUrl}}\" target=\"_blank\">\n" +
-    "      <span translate=\"subscription-status.view-invoices\"></span>\n" +
+    "      <span translate=\"{{messagesPrefix}}.view-invoices\"></span>\n" +
     "    </a>\n" +
     "  </div>\n" +
     "</div>\n" +

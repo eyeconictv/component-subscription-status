@@ -15,11 +15,13 @@
           companyId: "@",
           expandedFormat: "@",
           showStoreModal: "=?",
-          customProductLink: "@"
+          customProductLink: "@",
+          customMessages: "@"
         },
         template: $templateCache.get("subscription-status-template.html"),
         link: function($scope, elm, attrs, ctrl) {
           $scope.subscriptionStatus = {"status": "N/A", "statusCode": "na", "subscribed": false, "expiry": null};
+          $scope.messagesPrefix = $scope.customMessages ? $scope.customMessages : "subscription-status";
 
           var updateUrls = function() {
             $scope.storeAccountUrl = STORE_URL + ACCOUNT_PATH
@@ -34,19 +36,6 @@
                 .replace("companyId", $scope.companyId);
             }
           };
-
-          $scope.$watch("companyId", function() {
-            checkSubscriptionStatus();
-
-            updateUrls();
-          });
-
-          $rootScope.$on("refreshSubscriptionStatus", function(event, data) {
-            // Only refresh if currentStatus code matches the provided value, or value is null
-            if(data === null || $scope.subscriptionStatus.statusCode === data) {
-              checkSubscriptionStatus();
-            }
-          });
 
           function checkSubscriptionStatus() {
             if ($scope.productCode && $scope.productId && $scope.companyId) {
@@ -64,6 +53,19 @@
               });
             }
           }
+
+          $scope.$watch("companyId", function() {
+            checkSubscriptionStatus();
+
+            updateUrls();
+          });
+
+          $rootScope.$on("refreshSubscriptionStatus", function(event, data) {
+            // Only refresh if currentStatus code matches the provided value, or value is null
+            if(data === null || $scope.subscriptionStatus.statusCode === data) {
+              checkSubscriptionStatus();
+            }
+          });
 
           if (ctrl) {
             $scope.$watch("subscriptionStatus", function(subscriptionStatus) {
