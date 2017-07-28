@@ -13,6 +13,7 @@
           productId: "@",
           productCode: "@",
           companyId: "@",
+          displayId: "@",
           expandedFormat: "@",
           showStoreModal: "=?",
           customProductLink: "@",
@@ -38,8 +39,8 @@
           };
 
           function checkSubscriptionStatus() {
-            if ($scope.productCode && $scope.productId && $scope.companyId) {
-              subscriptionStatusService.get($scope.productCode, $scope.companyId).then(function(subscriptionStatus) {
+            if ($scope.productCode && $scope.productId && ($scope.companyId || $scope.displayId )) {
+              subscriptionStatusService.get($scope.productCode, $scope.companyId, $scope.displayId).then(function(subscriptionStatus) {
                 if (subscriptionStatus) {
                   if(!$scope.subscriptionStatus || $scope.subscriptionStatus.status !== subscriptionStatus.status) {
                     $rootScope.$emit("subscription-status:changed", subscriptionStatus);
@@ -60,11 +61,15 @@
             updateUrls();
           });
 
-          $rootScope.$on("refreshSubscriptionStatus", function(event, data) {
+          var subscriptionStatusListener = $rootScope.$on("refreshSubscriptionStatus", function(event, data) {
             // Only refresh if currentStatus code matches the provided value, or value is null
             if(data === null || $scope.subscriptionStatus.statusCode === data) {
               checkSubscriptionStatus();
             }
+          });
+          
+          $scope.$on("$destroy", function () {
+            subscriptionStatusListener();
           });
 
           if (ctrl) {
