@@ -1,3 +1,6 @@
+## DEPRECATED
+Use: https://github.com/Rise-Vision/common-header/tree/master/src/js/components/subscription-status
+
 # Subscription Status [![Circle CI](https://circleci.com/gh/Rise-Vision/component-subscription-status/tree/master.svg?style=svg)](https://circleci.com/gh/Rise-Vision/component-subscription-status/tree/master)
 
 ## Introduction
