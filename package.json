@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Rise-Vision/component-subscription-status.git"
+    "url": "https://github.com/porcupine-plan/component-subscription-status.git"
   },
   "author": "Rise Vision",
   "license": "GPLv3",
   "bugs": {
-    "url": "https://github.com/Rise-Vision/component-subscription-status/issues"
+    "url": "https://github.com/porcupine-plan/component-subscription-status/issues"
   },
-  "homepage": "https://github.com/Rise-Vision/component-subscription-status",
+  "homepage": "https://github.com/porcupine-plan/component-subscription-status",
   "devDependencies": {
     "bower": "^1.5.3",
     "chai": "~1.9.2",
@@ -36,6 +36,6 @@
     "jshint-stylish": "^0.2.0",
     "phantomjs": "^1.9.7-9",
     "run-sequence": "^0.3.2",
-    "widget-tester": "git://github.com/Rise-Vision/widget-tester.git"
+    "widget-tester": "git://github.com/porcupine-plan/widget-tester.git"
   }
 }
