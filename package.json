@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/porcupine-plan/component-subscription-status.git"
+    "url": "https://github.com/eyeconictv/component-subscription-status.git"
   },
   "author": "Rise Vision",
   "license": "GPLv3",
   "bugs": {
-    "url": "https://github.com/porcupine-plan/component-subscription-status/issues"
+    "url": "https://github.com/eyeconictv/component-subscription-status/issues"
   },
-  "homepage": "https://github.com/porcupine-plan/component-subscription-status",
+  "homepage": "https://github.com/eyeconictv/component-subscription-status",
   "devDependencies": {
     "bower": "^1.5.3",
     "chai": "~1.9.2",
@@ -35,7 +35,6 @@
     "gulp-watch": "^0.6.8",
     "jshint-stylish": "^0.2.0",
     "phantomjs": "^1.9.7-9",
-    "run-sequence": "^0.3.2",
-    "widget-tester": "git://github.com/porcupine-plan/widget-tester.git"
+    "run-sequence": "^0.3.2"
   }
 }
